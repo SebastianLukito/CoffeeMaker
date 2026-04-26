@@ -29,11 +29,45 @@ const authModalSubtitleEl = document.getElementById("authModalSubtitle");
 
 const authLoginEmailEl = document.getElementById("authLoginEmail");
 const authLoginPasswordEl = document.getElementById("authLoginPassword");
+const toggleLoginPasswordEl = document.getElementById("toggleLoginPassword");
 const authRegisterUsernameEl = document.getElementById("authRegisterUsername");
 const authRegisterEmailEl = document.getElementById("authRegisterEmail");
 const authRegisterPasswordEl = document.getElementById("authRegisterPassword");
+const toggleRegisterPasswordEl = document.getElementById("toggleRegisterPassword");
 
 let isRegisteringAccount = false;
+
+const passwordToggleIcons = {
+  show: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.1 12C3.5 8.2 7.3 5 12 5s8.5 3.2 9.9 7c-1.4 3.8-5.2 7-9.9 7s-8.5-3.2-9.9-7Z"/><circle cx="12" cy="12" r="3.2"/></svg>',
+  hide: '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2.4 12.2C3.9 8.5 7.5 5.5 12 5.5c1.3 0 2.6.2 3.7.7"/><path d="M21.6 12.2C20.1 15.9 16.5 18.9 12 18.9c-4.5 0-8.1-3-9.6-6.7 1.1-2.5 3.2-4.8 6-6.1"/><path d="M9.4 9.4A3.2 3.2 0 0 1 14.6 14.6"/><path d="M3 3 21 21"/></svg>'
+};
+
+function renderPasswordToggle(button, isVisible) {
+  if (!button) {
+    return;
+  }
+
+  button.innerHTML = isVisible ? passwordToggleIcons.hide : passwordToggleIcons.show;
+  button.setAttribute("aria-label", isVisible ? "Sembunyikan password" : "Tampilkan password");
+  button.setAttribute("aria-pressed", String(isVisible));
+}
+
+function setPasswordVisibility(inputEl, buttonEl, isVisible) {
+  if (!inputEl) {
+    return;
+  }
+
+  inputEl.type = isVisible ? "text" : "password";
+  renderPasswordToggle(buttonEl, isVisible);
+}
+
+function togglePasswordVisibility(inputEl, buttonEl) {
+  if (!inputEl) {
+    return;
+  }
+
+  setPasswordVisibility(inputEl, buttonEl, inputEl.type === "password");
+}
 
 function closeMobileHeaderMenu() {
   if (!headerActionsEl) {
@@ -193,11 +227,14 @@ function closeAuthModal() {
 
   authModalEl.hidden = true;
   document.body.classList.remove("modal-open");
+  setPasswordVisibility(authLoginPasswordEl, toggleLoginPasswordEl, false);
+  setPasswordVisibility(authRegisterPasswordEl, toggleRegisterPasswordEl, false);
 }
 
 function resetAuthFields() {
   if (authLoginPasswordEl) {
     authLoginPasswordEl.value = "";
+    setPasswordVisibility(authLoginPasswordEl, toggleLoginPasswordEl, false);
   }
   if (authRegisterUsernameEl) {
     authRegisterUsernameEl.value = "";
@@ -207,6 +244,7 @@ function resetAuthFields() {
   }
   if (authRegisterPasswordEl) {
     authRegisterPasswordEl.value = "";
+    setPasswordVisibility(authRegisterPasswordEl, toggleRegisterPasswordEl, false);
   }
 }
 
@@ -427,6 +465,12 @@ async function logoutCurrentUser() {
 
 function bootstrapAuthUI() {
   setupMobileHeaderMenu();
+
+  setPasswordVisibility(authLoginPasswordEl, toggleLoginPasswordEl, false);
+  setPasswordVisibility(authRegisterPasswordEl, toggleRegisterPasswordEl, false);
+
+  toggleLoginPasswordEl?.addEventListener("click", () => togglePasswordVisibility(authLoginPasswordEl, toggleLoginPasswordEl));
+  toggleRegisterPasswordEl?.addEventListener("click", () => togglePasswordVisibility(authRegisterPasswordEl, toggleRegisterPasswordEl));
 
   if (authTriggerEl) {
     authTriggerEl.addEventListener("click", () => openAuthModal("login"));

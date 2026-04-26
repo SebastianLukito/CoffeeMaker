@@ -240,9 +240,10 @@
             <label for="authLoginEmail">Username / Email</label>
             <input id="authLoginEmail" type="text" placeholder="username atau email" autocomplete="username" />
           </div>
-          <div>
+          <div class="password-field">
             <label for="authLoginPassword">Password</label>
             <input id="authLoginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+            <button class="password-toggle" id="toggleLoginPassword" type="button" aria-label="Tampilkan password" aria-pressed="false"></button>
           </div>
         </div>
 
@@ -262,9 +263,10 @@
             <label for="authRegisterEmail">Email</label>
             <input id="authRegisterEmail" type="email" placeholder="nama@email.com" autocomplete="email" />
           </div>
-          <div>
+          <div class="password-field">
             <label for="authRegisterPassword">Password</label>
             <input id="authRegisterPassword" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+            <button class="password-toggle" id="toggleRegisterPassword" type="button" aria-label="Tampilkan password" aria-pressed="false"></button>
           </div>
         </div>
 
