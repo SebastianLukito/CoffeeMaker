@@ -4,9 +4,21 @@ import { auth, db, firebaseReady } from "./firebase-client.js";
 
 const saveBtnEl = document.getElementById("saveRecipeBtn");
 const saveStatusEl = document.getElementById("saveStatus");
+const recipeMetaEl = document.querySelector(".recipe-meta");
+const actionRowEl = document.querySelector(".action-row");
 
 let latestRecipeSnapshot = null;
 let currentUser = null;
+
+function setSaveUiVisibility(isVisible) {
+  if (recipeMetaEl) {
+    recipeMetaEl.hidden = !isVisible;
+  }
+
+  if (actionRowEl) {
+    actionRowEl.hidden = !isVisible;
+  }
+}
 
 function setSaveStatus(message, tone = "info") {
   if (!saveStatusEl) {
@@ -142,6 +154,7 @@ function updateSaveButtonState() {
   }
 
   if (!firebaseReady) {
+    setSaveUiVisibility(false);
     saveBtnEl.hidden = true;
     saveBtnEl.disabled = true;
     setSaveStatus("Firebase belum aktif. Isi firebase-config.js dulu.", "warning");
@@ -149,11 +162,14 @@ function updateSaveButtonState() {
   }
 
   if (!currentUser) {
+    setSaveUiVisibility(false);
     saveBtnEl.hidden = true;
     saveBtnEl.disabled = false;
     setSaveStatus("Login dulu supaya resep bisa disimpan ke akun kamu.", "warning");
     return;
   }
+
+  setSaveUiVisibility(true);
 
   saveBtnEl.hidden = false;
 

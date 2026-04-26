@@ -153,7 +153,7 @@ const roastFlavorEffects = {
 };
 
 const mineralFlavorEffects = {
-  soft: "Mineral air soft biasanya membuat rasa lebih manis dan lembut.",
+  soft: "Konsentrasi mineral air soft biasanya membuat rasa lebih manis dan lembut.",
   balanced: "Mineral balanced membantu keseimbangan clarity dan body.",
   hard: "Mineral hard mendorong body dan intensity menjadi lebih tegas."
 };
@@ -375,9 +375,9 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
-      { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
+      { id: "waterHardness", label: "Konsentrasi mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
       { id: "targetTime", label: "Target brew time", type: "select", options: options.targetTime, default: "3:00" }
     ]
@@ -387,9 +387,9 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
-      { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
+      { id: "waterHardness", label: "Konsentrasi mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
       { id: "targetTime", label: "Target brew time", type: "select", options: options.targetTime, default: "3:00" }
     ]
@@ -399,9 +399,9 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "16" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioPourOver, default: "16" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
-      { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
+      { id: "waterHardness", label: "Konsentrasi mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
       { id: "targetTime", label: "Target brew time", type: "select", options: options.targetTime, default: "4:00" }
     ]
@@ -411,7 +411,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "fine" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 12, max: 25, step: 1, default: 18 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioImmersion, default: "13" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioImmersion, default: "13" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "90" },
       { id: "steepTime", label: "Steep time", type: "select", options: options.steepTime, default: "1:30" },
       { id: "pressTime", label: "Press time", type: "select", options: options.pressTime, default: "0:30" }
@@ -422,7 +422,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 30, step: 1, default: 22 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioImmersion, default: "15" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioImmersion, default: "15" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "steepTime", label: "Steep time", type: "select", options: options.steepTime, default: "4:00" }
     ]
@@ -432,7 +432,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "light" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "brewTime", label: "Brew time", type: "select", options: options.brewTime, default: "1:30" },
       { id: "drawdownTime", label: "Drawdown time", type: "select", options: options.drawdownTime, default: "0:45" }
@@ -454,7 +454,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindEspresso, default: "medium-fine" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "dark" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 28, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioMoka, default: "7" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioMoka, default: "7" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "90" }
     ]
   },
@@ -463,7 +463,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 30, max: 90, step: 5, default: 60 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioColdBrew, default: "8" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioColdBrew, default: "8" },
       { id: "steepTimeCold", label: "Waktu perendaman", type: "select", options: options.steepTimeCold, default: "16" },
       { id: "icePercent", label: "Persen air dingin saat serving", type: "select", options: options.icePercent, default: "35" }
     ]
@@ -473,7 +473,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 30, max: 80, step: 5, default: 50 },
-      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioColdDrip, default: "10" },
+      { id: "ratio", label: "Rasio kopi (gr) terhadap air (ml)", type: "select", options: options.ratioColdDrip, default: "10" },
       { id: "dripRate", label: "Drip rate", type: "select", options: options.dripRate, default: "2" },
       { id: "dripTime", label: "Drip time", type: "select", options: options.dripTime, default: "3" }
     ]
