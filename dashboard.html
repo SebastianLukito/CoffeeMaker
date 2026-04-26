@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard Resep - Javanese Iced Coffee Studio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/styles.css" />
+  <link rel="stylesheet" href="style/dashboard.css" />
+</head>
+<body class="dashboard-page">
+  <div class="noise" aria-hidden="true"></div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="logo-title">Dashboard Resep -- Javanese Iced Coffee Studio</div>
+    </div>
+    <div class="header-actions">
+      <a class="pill pill-link" href="index.html">Brew Builder</a>
+      <a class="pill pill-link" href="compare.html">Compare Lab</a>
+      <a class="pill pill-link" id="homeLink" href="home.html" hidden>Home Akun</a>
+      <a class="pill pill-link" id="dashboardLink" href="dashboard.html" hidden>Dashboard Resep</a>
+      <button class="pill pill-link auth-btn" id="authTrigger" type="button" hidden>Login</button>
+      <button class="pill pill-link auth-btn" id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <main class="dashboard-shell">
+    <section class="dashboard-hero">
+      <div>
+        <p class="dashboard-kicker">Recipe Control Room</p>
+        <h1>Kelola Resep Personal Dengan Workflow Lebih Rapi</h1>
+        <p>Tambah resep lewat Brew Builder, lalu pantau koleksi personal kamu di dashboard ini secara realtime.</p>
+      </div>
+
+      <div class="dashboard-hero-metrics">
+        <article class="dashboard-metric-card">
+          <span class="dashboard-metric-value" id="statRecipeTotal">0</span>
+          <span class="dashboard-metric-label">Total Resep</span>
+        </article>
+        <article class="dashboard-metric-card">
+          <span class="dashboard-metric-value dashboard-metric-small" id="statLastUpdate">-</span>
+          <span class="dashboard-metric-label">Update Terakhir</span>
+        </article>
+        <article class="dashboard-metric-card">
+          <span class="dashboard-metric-value dashboard-metric-small" id="statBuilderRoute">Brew Builder</span>
+          <span class="dashboard-metric-label">Tambah Dari</span>
+        </article>
+      </div>
+    </section>
+
+    <section class="dashboard-list-card">
+      <div class="dashboard-section-head">
+        <h2>Daftar Resep</h2>
+        <div class="dashboard-list-toolbar">
+          <p id="dashboardMessage">Menyiapkan koneksi ke resep akun...</p>
+          <a class="btn dashboard-add-btn" href="index.html">Tambah Resep</a>
+        </div>
+      </div>
+      <div class="dashboard-recipe-list" id="recipeList"></div>
+    </section>
+  </main>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="auth-modal-head">
+        <h3 id="authModalTitle">Login Akun</h3>
+        <button class="auth-modal-close" id="closeAuthModal" type="button" aria-label="Tutup popup">x</button>
+      </div>
+
+      <p class="auth-modal-subtitle" id="authModalSubtitle">Masuk atau buat akun untuk menyimpan resep personal kamu.</p>
+
+      <div class="auth-view-switch" role="tablist" aria-label="Pilih form autentikasi">
+        <button class="auth-switch-btn is-active" id="showLoginView" type="button" aria-pressed="true">Login</button>
+        <button class="auth-switch-btn" id="showRegisterView" type="button" aria-pressed="false">Registrasi</button>
+      </div>
+
+      <form class="auth-view" id="loginView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authLoginEmail">Username / Email</label>
+            <input id="authLoginEmail" type="text" placeholder="username atau email" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authLoginPassword">Password</label>
+            <input id="authLoginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="loginSubmit" type="submit">Login</button>
+        <p class="auth-view-hint">Belum punya akun?
+          <button class="auth-inline-link" id="switchToRegisterInline" type="button">Registrasi di sini</button>
+        </p>
+      </form>
+
+      <form class="auth-view is-hidden" id="registerView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authRegisterUsername">Username</label>
+            <input id="authRegisterUsername" type="text" placeholder="Masukkan username" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authRegisterEmail">Email</label>
+            <input id="authRegisterEmail" type="email" placeholder="nama@email.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="authRegisterPassword">Password</label>
+            <input id="authRegisterPassword" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="registerSubmit" type="submit">Registrasi</button>
+        <p class="auth-view-hint">Sudah punya akun?
+          <button class="auth-inline-link" id="switchToLoginInline" type="button">Kembali ke login</button>
+        </p>
+      </form>
+
+      <p class="auth-message" id="authMessage" data-tone="info">Masukkan username/email dan password untuk mulai.</p>
+    </div>
+  </div>
+
+  <script type="module" src="script/pages/dashboard-page.js"></script>
+</body>
+</html>

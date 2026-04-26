@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Home Akun - Javanese Iced Coffee Studio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/styles.css" />
+  <link rel="stylesheet" href="style/home.css" />
+</head>
+<body class="account-home-page">
+  <div class="noise" aria-hidden="true"></div>
+
+  <header>
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="logo-title">Home Akun -- Javanese Iced Coffee Studio</div>
+    </div>
+    <div class="header-actions">
+      <a class="pill pill-link" href="index.html">Brew Builder</a>
+      <a class="pill pill-link" href="compare.html">Compare Lab</a>
+      <a class="pill pill-link" id="homeLink" href="home.html" hidden>Home Akun</a>
+      <a class="pill pill-link" id="dashboardLink" href="dashboard.html" hidden>Dashboard Resep</a>
+      <button class="pill pill-link auth-btn" id="authTrigger" type="button" hidden>Login</button>
+      <button class="pill pill-link auth-btn" id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <main class="account-home-shell">
+    <section class="account-hero">
+      <p class="account-kicker">Account Home</p>
+      <h1 id="welcomeHeading">Selamat datang kembali.</h1>
+      <p id="homeIntro">Memuat data resep akun kamu...</p>
+      <div class="account-hero-actions">
+        <a class="btn" href="index.html">Racik Resep Baru</a>
+        <a class="btn btn-secondary" href="dashboard.html">Buka Dashboard Resep</a>
+      </div>
+    </section>
+
+    <section class="account-summary-grid">
+      <article class="account-summary-card">
+        <h3>Total Resep Tersimpan</h3>
+        <p class="account-stat" id="recipeCount">0</p>
+      </article>
+      <article class="account-summary-card">
+        <h3>Update Terakhir</h3>
+        <p class="account-stat-small" id="lastUpdated">-</p>
+      </article>
+      <article class="account-summary-card">
+        <h3>Resep Terbaru Ditampilkan</h3>
+        <p class="account-stat-small" id="recentCount">0</p>
+      </article>
+    </section>
+
+    <section class="recent-recipes-card">
+      <div class="recent-recipes-head">
+        <h2>Resep Terbaru Kamu</h2>
+        <a class="pill pill-link" href="dashboard.html">Kelola Semua Resep</a>
+      </div>
+      <p class="recent-recipes-empty" id="homeStatus">Menyiapkan daftar resep...</p>
+      <div class="recent-recipe-list" id="recentRecipeList"></div>
+    </section>
+  </main>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="auth-modal-head">
+        <h3 id="authModalTitle">Login Akun</h3>
+        <button class="auth-modal-close" id="closeAuthModal" type="button" aria-label="Tutup popup">x</button>
+      </div>
+
+      <p class="auth-modal-subtitle" id="authModalSubtitle">Masuk atau buat akun untuk menyimpan resep personal kamu.</p>
+
+      <div class="auth-view-switch" role="tablist" aria-label="Pilih form autentikasi">
+        <button class="auth-switch-btn is-active" id="showLoginView" type="button" aria-pressed="true">Login</button>
+        <button class="auth-switch-btn" id="showRegisterView" type="button" aria-pressed="false">Registrasi</button>
+      </div>
+
+      <form class="auth-view" id="loginView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authLoginEmail">Username / Email</label>
+            <input id="authLoginEmail" type="text" placeholder="username atau email" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authLoginPassword">Password</label>
+            <input id="authLoginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="loginSubmit" type="submit">Login</button>
+        <p class="auth-view-hint">Belum punya akun?
+          <button class="auth-inline-link" id="switchToRegisterInline" type="button">Registrasi di sini</button>
+        </p>
+      </form>
+
+      <form class="auth-view is-hidden" id="registerView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authRegisterUsername">Username</label>
+            <input id="authRegisterUsername" type="text" placeholder="Masukkan username" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authRegisterEmail">Email</label>
+            <input id="authRegisterEmail" type="email" placeholder="nama@email.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="authRegisterPassword">Password</label>
+            <input id="authRegisterPassword" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="registerSubmit" type="submit">Registrasi</button>
+        <p class="auth-view-hint">Sudah punya akun?
+          <button class="auth-inline-link" id="switchToLoginInline" type="button">Kembali ke login</button>
+        </p>
+      </form>
+
+      <p class="auth-message" id="authMessage" data-tone="info">Masukkan username/email dan password untuk mulai.</p>
+    </div>
+  </div>
+
+  <script type="module" src="script/pages/home-page.js"></script>
+</body>
+</html>

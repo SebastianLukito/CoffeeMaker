@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Compare Lab - Javanese Iced Coffee Studio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/styles.css" />
+  <link rel="stylesheet" href="style/compare-page.css" />
+</head>
+<body class="compare-page">
+  <canvas class="spill-canvas" id="spillCanvas" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <header>
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="logo-title">Compare Lab -- Javanese Iced Coffee Studio</div>
+    </div>
+    <div class="header-actions">
+      <a class="pill pill-link" href="index.html">Kembali ke Home</a>
+      <a class="pill pill-link" id="homeLink" href="home.html" hidden>Home Akun</a>
+      <a class="pill pill-link" id="dashboardLink" href="dashboard.html" hidden>Dashboard Resep</a>
+      <button class="pill pill-link auth-btn" id="authTrigger" type="button">Login</button>
+      <button class="pill pill-link auth-btn" id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <section class="hero compare-lab-hero">
+    <div class="compare-lab-shell">
+      <div class="compare-lab-head">
+        <h1>Compare Lab: Setup Brew A vs B</h1>
+        <p>Kiri dan kanan adalah dua input brew berbeda. Radar chart di bawah masing-masing panel akan berubah sesuai input panelnya.</p>
+      </div>
+
+      <div class="compare-lab-grid">
+        <article class="card compare-brew-card" data-side="A">
+          <div class="compare-brew-head">
+            <h2>Setup A</h2>
+          </div>
+          <div class="compare-brew-fields" id="brewFieldsA"></div>
+
+          <section class="flavor-visual compare-flavor-visual" aria-live="polite">
+            <div class="flavor-visual-head">
+              <h3>Radar Chart A</h3>
+              <p>Profil rasa setup A.</p>
+            </div>
+            <div class="flavor-visual-grid">
+              <article class="flavor-chart-card">
+                <canvas id="flavorRadarCanvasA" width="420" height="320" aria-label="Flavor radar chart setup A"></canvas>
+              </article>
+            </div>
+            <div class="flavor-metric-grid" id="flavorMetricGridA"></div>
+          </section>
+        </article>
+
+        <article class="card compare-brew-card" data-side="B">
+          <div class="compare-brew-head">
+            <h2>Setup B</h2>
+          </div>
+          <div class="compare-brew-fields" id="brewFieldsB"></div>
+
+          <section class="flavor-visual compare-flavor-visual" aria-live="polite">
+            <div class="flavor-visual-head">
+              <h3>Radar Chart B</h3>
+              <p>Profil rasa setup B.</p>
+            </div>
+            <div class="flavor-visual-grid">
+              <article class="flavor-chart-card">
+                <canvas id="flavorRadarCanvasB" width="420" height="320" aria-label="Flavor radar chart setup B"></canvas>
+              </article>
+            </div>
+            <div class="flavor-metric-grid" id="flavorMetricGridB"></div>
+          </section>
+        </article>
+      </div>
+
+      <section class="compare-summary-card" aria-live="polite">
+        <h3>Delta Setup B terhadap Setup A</h3>
+        <div class="compare-summary-grid" id="compareSummaryGrid"></div>
+        <p class="compare-summary-note" id="compareSummaryNote">Sesuaikan input kiri/kanan untuk melihat perbedaan profil rasa.</p>
+      </section>
+    </div>
+  </section>
+
+  <footer>
+    Halaman Compare Lab: evaluasi setup A/B dengan fokus pada body, acidity, dan sweetness.
+  </footer>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="auth-modal-head">
+        <h3 id="authModalTitle">Login Akun</h3>
+        <button class="auth-modal-close" id="closeAuthModal" type="button" aria-label="Tutup popup">x</button>
+      </div>
+
+      <p class="auth-modal-subtitle" id="authModalSubtitle">Masuk atau buat akun untuk menyimpan resep personal kamu.</p>
+
+      <div class="auth-view-switch" role="tablist" aria-label="Pilih form autentikasi">
+        <button class="auth-switch-btn is-active" id="showLoginView" type="button" aria-pressed="true">Login</button>
+        <button class="auth-switch-btn" id="showRegisterView" type="button" aria-pressed="false">Registrasi</button>
+      </div>
+
+      <form class="auth-view" id="loginView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authLoginEmail">Username / Email</label>
+            <input id="authLoginEmail" type="text" placeholder="username atau email" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authLoginPassword">Password</label>
+            <input id="authLoginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="loginSubmit" type="submit">Login</button>
+        <p class="auth-view-hint">Belum punya akun?
+          <button class="auth-inline-link" id="switchToRegisterInline" type="button">Registrasi di sini</button>
+        </p>
+      </form>
+
+      <form class="auth-view is-hidden" id="registerView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authRegisterUsername">Username</label>
+            <input id="authRegisterUsername" type="text" placeholder="Masukkan username" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authRegisterEmail">Email</label>
+            <input id="authRegisterEmail" type="email" placeholder="nama@email.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="authRegisterPassword">Password</label>
+            <input id="authRegisterPassword" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="registerSubmit" type="submit">Registrasi</button>
+        <p class="auth-view-hint">Sudah punya akun?
+          <button class="auth-inline-link" id="switchToLoginInline" type="button">Kembali ke login</button>
+        </p>
+      </form>
+
+      <p class="auth-message" id="authMessage" data-tone="info">Masukkan username/email dan password untuk mulai.</p>
+    </div>
+  </div>
+
+  <script type="module" src="script/pages/compare-page.js"></script>
+</body>
+</html>

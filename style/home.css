@@ -1,0 +1,271 @@
+body.account-home-page {
+  background:
+    radial-gradient(1300px 720px at 92% -14%, rgba(255, 208, 160, 0.86) 0%, transparent 56%),
+    radial-gradient(980px 620px at 8% -8%, rgba(170, 227, 205, 0.64) 0%, transparent 54%),
+    linear-gradient(180deg, #f9f5ee 0%, #f2eee7 100%);
+}
+
+.account-home-shell {
+  max-width: 1220px;
+  margin: 0 auto;
+  padding: 10px 8vw 68px;
+  display: grid;
+  gap: 20px;
+}
+
+.account-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: 24px;
+  border: 1px solid rgba(34, 27, 22, 0.12);
+  background:
+    radial-gradient(90% 130% at 0% 0%, rgba(255, 255, 255, 0.68) 0%, rgba(255, 255, 255, 0) 58%),
+    linear-gradient(146deg, rgba(41, 91, 73, 0.95) 0%, rgba(208, 123, 58, 0.9) 100%);
+  box-shadow: 0 22px 54px rgba(34, 27, 22, 0.2);
+  padding: clamp(22px, 2.8vw, 34px);
+  color: #fff;
+}
+
+.account-hero::before,
+.account-hero::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 999px;
+}
+
+.account-hero::before {
+  width: 260px;
+  height: 260px;
+  right: -90px;
+  top: -120px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0) 72%);
+}
+
+.account-hero::after {
+  width: 330px;
+  height: 330px;
+  left: -120px;
+  bottom: -190px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 76%);
+}
+
+.account-kicker {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff6ec;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin: 0 0 10px;
+  padding: 6px 12px;
+  backdrop-filter: blur(4px);
+}
+
+.account-hero h1 {
+  margin: 10px 0 0;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: clamp(1.6rem, 1.6vw + 0.95rem, 2.6rem);
+  font-weight: 700;
+  line-height: 1.18;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+.account-hero p {
+  margin: 12px 0 0;
+  max-width: 64ch;
+  color: rgba(255, 250, 243, 0.96);
+  font-size: 1.02rem;
+}
+
+.account-hero-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.account-hero .btn {
+  box-shadow: 0 10px 24px rgba(23, 14, 9, 0.2);
+}
+
+.account-hero .btn.btn-secondary {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #fff;
+}
+
+.account-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.account-summary-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  border: 1px solid rgba(34, 27, 22, 0.11);
+  background: linear-gradient(155deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 255, 252, 0.9) 100%);
+  padding: 18px;
+  box-shadow: 0 14px 30px rgba(34, 27, 22, 0.09);
+}
+
+.account-summary-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, #d07b3a 0%, #4a7f6b 100%);
+}
+
+.account-summary-card h3 {
+  margin: 0;
+  color: #5e4f43;
+  font-size: 0.88rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.account-stat {
+  margin: 10px 0 0;
+  font-size: clamp(2rem, 2vw + 1.4rem, 2.8rem);
+  font-weight: 700;
+  color: #214d3d;
+}
+
+.account-stat-small {
+  margin: 10px 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #314739;
+}
+
+.recent-recipes-card {
+  border-radius: 22px;
+  border: 1px solid rgba(34, 27, 22, 0.1);
+  background:
+    radial-gradient(120% 100% at 100% 0%, rgba(208, 123, 58, 0.08) 0%, rgba(208, 123, 58, 0) 55%),
+    radial-gradient(100% 100% at 0% 100%, rgba(74, 127, 107, 0.1) 0%, rgba(74, 127, 107, 0) 54%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 248, 238, 0.9) 100%);
+  padding: 20px;
+  box-shadow: 0 18px 42px rgba(34, 27, 22, 0.1);
+}
+
+.recent-recipes-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.recent-recipes-head h2 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: clamp(1.3rem, 1.4vw + 1rem, 2rem);
+}
+
+.recent-recipes-empty {
+  margin: 14px 0 2px;
+  color: #5f4f42;
+  font-size: 0.95rem;
+}
+
+.recent-recipes-empty[data-tone="success"] {
+  color: #2f644f;
+}
+
+.recent-recipes-empty[data-tone="warning"] {
+  color: #8a552f;
+}
+
+.recent-recipes-empty[data-tone="error"] {
+  color: #8f2f2f;
+}
+
+.recent-recipe-list {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+}
+
+.recent-recipe-item {
+  border-radius: 14px;
+  border: 1px solid rgba(34, 27, 22, 0.12);
+  background: rgba(255, 255, 255, 0.96);
+  padding: 14px;
+  transition: transform 0.24s var(--ease-out), box-shadow 0.24s var(--ease-out), border-color 0.24s ease;
+}
+
+.recent-recipe-item:hover {
+  transform: translateY(-2px);
+  border-color: rgba(74, 127, 107, 0.34);
+  box-shadow: 0 12px 24px rgba(34, 27, 22, 0.1);
+}
+
+.recent-recipe-item-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.recent-recipe-item-head h4 {
+  margin: 0;
+  font-family: "Fraunces", serif;
+  font-size: 1.08rem;
+}
+
+.recent-recipe-item .tag {
+  background: rgba(74, 127, 107, 0.14);
+  color: #2f5e4c;
+  border: 1px solid rgba(74, 127, 107, 0.2);
+}
+
+.recent-recipe-meta {
+  margin: 7px 0 0;
+  color: #5f4f42;
+  font-size: 0.9rem;
+}
+
+.recent-recipe-note {
+  margin: 9px 0 0;
+  color: #4f4339;
+  font-size: 0.87rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 980px) {
+  .account-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .account-home-shell {
+    padding-left: 5vw;
+    padding-right: 5vw;
+    gap: 16px;
+  }
+
+  .account-hero {
+    border-radius: 20px;
+  }
+
+  .recent-recipes-card {
+    border-radius: 18px;
+    padding: 16px;
+  }
+
+  .account-hero-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}

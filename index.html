@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Javanese Iced Coffee Studio</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="shortcut icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style/styles.css" />
+</head>
+<body>
+  <canvas class="spill-canvas" id="spillCanvas" aria-hidden="true"></canvas>
+  <div class="noise" aria-hidden="true"></div>
+  <header>
+    <div class="logo">
+      <div class="logo-mark" aria-hidden="true"></div>
+      <div class="logo-title">Javanese Iced Coffee Studio -- Made With Love by Sebastian</div>
+    </div>
+    <div class="header-actions">
+      <a class="pill pill-link" href="compare.html">Buka Compare Lab</a>
+      <a class="pill pill-link" id="homeLink" href="home.html" hidden>Home Akun</a>
+      <a class="pill pill-link" id="dashboardLink" href="dashboard.html" hidden>Dashboard Resep</a>
+      <button class="pill pill-link auth-btn" id="authTrigger" type="button">Login</button>
+      <button class="pill pill-link auth-btn" id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-intro">
+      <h1>Racik Javanese Iced Coffee, personal dan presisi.</h1>
+      <p>Pilih kopi, alat seduh, dan variabel rasa yang relevan untuk setiap metode. Sistem akan menyesuaikan langkah seduh sesuai alat yang dipilih.</p>
+    </div>
+
+    <div class="card hero-card">
+      <div class="grid two base-grid">
+        <div>
+          <label for="coffeeType">Jenis kopi</label>
+          <select id="coffeeType">
+            <option value="" selected disabled>Pilih jenis kopi</option>
+            <option value="java-robusta">Java Robusta</option>
+            <option value="java-arabica">Java Arabica</option>
+            <option value="java-excelsa">Java Excelsa</option>
+            <option value="java-liberica">Java Liberica</option>
+            <option value="blend">Javanese Blend</option>
+            <option value="custom">Custom (isi manual)</option>
+          </select>
+        </div>
+        <div>
+          <label for="brewTool">Alat penyeduhan</label>
+          <select id="brewTool">
+            <option value="" selected disabled>Pilih alat penyeduhan</option>
+            <option value="v60">V60</option>
+            <option value="kalita">Kalita Wave</option>
+            <option value="aeropress">Aeropress</option>
+            <option value="frenchpress">French Press</option>
+            <option value="chemex">Chemex</option>
+            <option value="syphon">Syphon</option>
+            <option value="espresso">Espresso Maker</option>
+            <option value="mokapot">Moka Pot</option>
+            <option value="coldBrew">Cold Brew</option>
+            <option value="coldDrip">Cold Drip Tower</option>
+          </select>
+        </div>
+      </div>
+
+      <p class="setup-hint" id="setupHint">Step pertama: pilih jenis kopi dan alat penyeduhan dulu. Opsi lanjutan akan muncul otomatis setelah itu.</p>
+
+      <div class="advanced-options is-hidden" id="advancedOptions">
+        <div class="grid two advanced-grid">
+          <div class="custom-controls" id="customControls">
+            <label for="customCoffee">Nama kopi (opsional)</label>
+            <input id="customCoffee" type="text" placeholder="Misal: Temanggung Natural" />
+          </div>
+          <div class="blend-controls" id="blendControls">
+            <div class="blend-controls-head">
+              <label>Rasio blend Robusta/Arabica (%)</label>
+              <span class="blend-lock">Total 100%</span>
+            </div>
+            <div class="blend-grid">
+              <div class="blend-field">
+                <label for="blendRobusta">Robusta (%)</label>
+                <input id="blendRobusta" type="number" min="0" max="100" step="1" value="30" />
+              </div>
+              <div class="blend-field">
+                <label for="blendArabica">Arabica (%)</label>
+                <input id="blendArabica" type="number" min="0" max="100" step="1" value="70" />
+              </div>
+            </div>
+            <p class="blend-total-note">Total blend selalu 100%. Saat Robusta dinaikkan, Arabica otomatis menyesuaikan (dan sebaliknya).</p>
+          </div>
+        </div>
+
+        <div class="grid two" id="toolFields"></div>
+
+        <div class="action-row">
+          <button class="btn" id="generate">Buat langkah seduh</button>
+          <button class="btn btn-secondary" id="saveRecipeBtn" type="button">Simpan ke Dashboard</button>
+          <p class="save-status" id="saveStatus" aria-live="polite">Login untuk menyimpan resep personal.</p>
+        </div>
+
+        <div class="recipe" id="recipe"></div>
+      </div>
+    </div>
+
+    <aside class="aside">
+      <h3 class="aside-title">Brew profile</h3>
+      <div class="stat" data-stat="coffee"><span>Kopi</span><span class="tag" id="coffeeProfile">Java Arabica</span></div>
+      <div class="stat" data-stat="process"><span>Proses</span><span class="tag" id="processProfile">Washed</span></div>
+      <div class="stat" data-stat="varietal"><span>Varietas</span><span class="tag" id="varietalProfile">Typica</span></div>
+      <div class="stat" data-stat="grind"><span>Gilingan</span><span class="tag" id="grindProfile">Medium</span></div>
+      <div class="stat" data-stat="roast"><span>Roast</span><span class="tag" id="roastProfile">Medium</span></div>
+      <div class="stat" data-stat="temp"><span>Suhu air</span><span class="tag" id="tempProfile">92°C</span></div>
+      <div class="stat" data-stat="mineral"><span>Mineral</span><span class="tag" id="mineralProfile">Balanced</span></div>
+      <div class="stat" data-stat="agitation"><span>Agitasi</span><span class="tag" id="agitationProfile">Gentle</span></div>
+      <div class="stat" data-stat="time"><span>Target waktu</span><span class="tag" id="timeProfile">2:30</span></div>
+      <div class="stat" data-stat="totalWater"><span>Total air</span><span class="tag" id="totalWater">280 ml</span></div>
+      <div class="stat" data-stat="bloomWater"><span>Blooming</span><span class="tag" id="bloomWater">60 ml</span></div>
+      <div class="stat" data-stat="firstPour"><span>Tuangan 1</span><span class="tag" id="firstPour">110 ml</span></div>
+      <div class="stat" data-stat="secondPour"><span>Tuangan 2</span><span class="tag" id="secondPour">110 ml</span></div>
+      <div class="stat" data-stat="iceWater"><span>Air dingin</span><span class="tag" id="iceWater">120 ml</span></div>
+      <div class="stat" data-stat="brewRatio"><span>Rasio brew</span><span class="tag" id="brewRatioProfile">1:2</span></div>
+      <div class="stat" data-stat="shotTime"><span>Shot time</span><span class="tag" id="shotTimeProfile">28 detik</span></div>
+      <div class="stat" data-stat="pressure"><span>Pressure</span><span class="tag" id="pressureProfile">9 bar</span></div>
+      <div class="stat" data-stat="steepTime"><span>Steep time</span><span class="tag" id="steepTimeProfile">3:30</span></div>
+      <div class="stat" data-stat="drawdownTime"><span>Drawdown</span><span class="tag" id="drawdownTimeProfile">0:50</span></div>
+      <div class="stat" data-stat="dripRate"><span>Drip rate</span><span class="tag" id="dripRateProfile">2 tetes/detik</span></div>
+      <div class="stat" data-stat="dripTime"><span>Drip time</span><span class="tag" id="dripTimeProfile">3 jam</span></div>
+      <p class="aside-tip">Tip: gunakan es batu besar agar tidak cepat mencair dan tetap menjaga body kopi.</p>
+
+      <section class="flavor-visual is-hidden" id="flavorVisual" aria-live="polite">
+        <div class="flavor-visual-head">
+          <h3>Radar Chart</h3>
+          <p>Visual rasa akhir berdasarkan process, varietal, tool, roast, mineral, dan agitasi.</p>
+        </div>
+
+        <div class="flavor-visual-grid">
+          <article class="flavor-chart-card">
+            <h4>Radar Chart</h4>
+            <canvas id="flavorRadarCanvas" width="420" height="320" aria-label="Flavor radar chart"></canvas>
+          </article>
+        </div>
+
+        <div class="flavor-metric-grid" id="flavorMetricGrid"></div>
+      </section>
+
+      <section class="tuning-assistant is-hidden" id="tuningAssistant" aria-live="polite">
+        <div class="tuning-head">
+          <h3>Smart Tuning Assistant</h3>
+        </div>
+
+        <div class="tuning-controls">
+          <div>
+            <select id="tasteIssue">
+              <option value="too-bitter">Terlalu pahit</option>
+              <option value="too-sour">Terlalu asam</option>
+              <option value="too-thin">Body terlalu tipis</option>
+              <option value="too-heavy">Body terlalu tebal</option>
+              <option value="too-flat">Aroma kurang keluar</option>
+              <option value="too-dry">Aftertaste terlalu kering</option>
+            </select>
+          </div>
+          <button class="btn tuning-btn" id="runTuning" type="button">Beri Saran Tuning</button>
+        </div>
+
+        <div class="tuning-summary" id="tuningSummary">Pilih masalah rasa, lalu klik tombol tuning.</div>
+        <ul class="tuning-list" id="tuningList"></ul>
+      </section>
+    </aside>
+  </section>
+
+  <footer>
+    Dirancang untuk karakter kopi Jawa: manis rempah, nutty, dan creamy. Sesuaikan rasio dan gramasi sesuai selera.
+  </footer>
+
+  <div class="auth-modal" id="authModal" hidden>
+    <div class="auth-modal-card" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
+      <div class="auth-modal-head">
+        <h3 id="authModalTitle">Login Akun</h3>
+        <button class="auth-modal-close" id="closeAuthModal" type="button" aria-label="Tutup popup">x</button>
+      </div>
+
+      <p class="auth-modal-subtitle" id="authModalSubtitle">Masuk atau buat akun untuk menyimpan resep personal kamu.</p>
+
+      <div class="auth-view-switch" role="tablist" aria-label="Pilih form autentikasi">
+        <button class="auth-switch-btn is-active" id="showLoginView" type="button" aria-pressed="true">Login</button>
+        <button class="auth-switch-btn" id="showRegisterView" type="button" aria-pressed="false">Registrasi</button>
+      </div>
+
+      <form class="auth-view" id="loginView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authLoginEmail">Username / Email</label>
+            <input id="authLoginEmail" type="text" placeholder="username atau email" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authLoginPassword">Password</label>
+            <input id="authLoginPassword" type="password" placeholder="Masukkan password" autocomplete="current-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="loginSubmit" type="submit">Login</button>
+        <p class="auth-view-hint">Belum punya akun?
+          <button class="auth-inline-link" id="switchToRegisterInline" type="button">Registrasi di sini</button>
+        </p>
+      </form>
+
+      <form class="auth-view is-hidden" id="registerView" novalidate>
+        <div class="auth-form-grid">
+          <div>
+            <label for="authRegisterUsername">Username</label>
+            <input id="authRegisterUsername" type="text" placeholder="Masukkan username" autocomplete="username" />
+          </div>
+          <div>
+            <label for="authRegisterEmail">Email</label>
+            <input id="authRegisterEmail" type="email" placeholder="nama@email.com" autocomplete="email" />
+          </div>
+          <div>
+            <label for="authRegisterPassword">Password</label>
+            <input id="authRegisterPassword" type="password" placeholder="Minimal 6 karakter" autocomplete="new-password" />
+          </div>
+        </div>
+
+        <button class="btn auth-submit" id="registerSubmit" type="submit">Registrasi</button>
+        <p class="auth-view-hint">Sudah punya akun?
+          <button class="auth-inline-link" id="switchToLoginInline" type="button">Kembali ke login</button>
+        </p>
+      </form>
+
+      <p class="auth-message" id="authMessage" data-tone="info">Masukkan username/email dan password untuk mulai.</p>
+    </div>
+  </div>
+
+  <script type="module" src="script/pages/index-page.js"></script>
+</body>
+</html>

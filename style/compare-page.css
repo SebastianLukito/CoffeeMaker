@@ -1,0 +1,176 @@
+body.compare-page .hero {
+  display: block;
+}
+
+body.compare-page .hero p {
+  max-width: 68ch;
+}
+
+body.compare-page .card {
+  padding: 22px;
+}
+
+body.compare-page .header-actions {
+  gap: 8px;
+}
+
+body.compare-page .pill {
+  background: #fff4e8;
+}
+
+body.compare-page .pill-link:not(.auth-btn) {
+  background: rgba(74, 127, 107, 0.14);
+  color: #2b5b4a;
+  border-color: rgba(74, 127, 107, 0.3);
+}
+
+.compare-lab-shell {
+  display: grid;
+  gap: 20px;
+}
+
+.compare-lab-head h1 {
+  margin-bottom: 8px;
+}
+
+.compare-lab-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.compare-brew-card {
+  border: 1px solid rgba(34, 27, 22, 0.1);
+  box-shadow: 0 12px 28px rgba(34, 27, 22, 0.06);
+}
+
+.compare-brew-card[data-side="A"] {
+  border-left: 5px solid #d07b3a;
+}
+
+.compare-brew-card[data-side="B"] {
+  border-left: 5px solid #4a7f6b;
+}
+
+.compare-brew-head {
+  margin-bottom: 14px;
+}
+
+.compare-brew-head h2 {
+  margin: 0;
+  font-size: 1.22rem;
+}
+
+.compare-brew-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+}
+
+.compare-field-row {
+  display: grid;
+  gap: 6px;
+}
+
+.compare-field-row label {
+  margin: 0;
+  font-size: 0.92rem;
+}
+
+.compare-field-row input,
+.compare-field-row select {
+  width: 100%;
+}
+
+.compare-flavor-visual {
+  margin-top: 18px;
+}
+
+.compare-summary-card {
+  border-radius: 20px;
+  border: 1px solid rgba(34, 27, 22, 0.11);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(250, 255, 252, 0.9) 100%);
+  padding: 18px;
+}
+
+.compare-summary-card h3 {
+  margin: 0 0 12px;
+}
+
+.compare-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/* .compare-summary-note p {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+  color: #345f50;
+
+} */
+
+.compare-delta-card {
+  border-radius: 12px;
+  border: 1px solid rgba(34, 27, 22, 0.15);
+  background: #fff;
+  padding: 10px;
+  display: grid;
+  gap: 3px;
+}
+
+.compare-delta-card span {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.compare-delta-card strong {
+  font-size: 1.15rem;
+  line-height: 1.2;
+}
+
+.compare-delta-card small {
+  font-size: 0.75rem;
+  color: #6a584a;
+  line-height: 1.35;
+}
+
+.compare-delta-card[data-trend="positive"] {
+  border-color: rgba(74, 127, 107, 0.35);
+  background: rgba(74, 127, 107, 0.1);
+}
+
+.compare-delta-card[data-trend="negative"] {
+  border-color: rgba(208, 123, 58, 0.36);
+  background: rgba(208, 123, 58, 0.11);
+}
+
+.compare-summary-note {
+  margin: 12px 0 0;
+  font-size: 0.95rem;
+  color: #345f50;
+}
+
+@media (max-width: 1040px) {
+  .compare-lab-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-summary-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 620px) {
+  body.compare-page .card {
+    padding: 18px;
+  }
+
+  .compare-brew-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .compare-summary-grid {
+    grid-template-columns: 1fr;
+  }
+}
