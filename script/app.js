@@ -2316,10 +2316,27 @@ function buildRecipe(options = {}) {
   const manualOverrides = getManualBrewOverrides();
   const doseValue = manualOverrides.dose ?? values.dose;
   const waterTempValue = manualOverrides.waterTemp ?? values.waterTemp;
+  const manualWaterValue = manualOverrides.water;
+
+  const effectiveValues = {
+    ...values,
+    dose: doseValue,
+    waterTemp: waterTempValue
+  };
+
+  if (manualWaterValue && Number.isFinite(doseValue) && doseValue > 0) {
+    if (values.ratio !== undefined) {
+      effectiveValues.ratio = Number((manualWaterValue / doseValue).toFixed(2));
+    }
+    if (brewTool === "espresso") {
+      effectiveValues.brewRatio = Number((manualWaterValue / doseValue).toFixed(2));
+    }
+  }
+
   let ratioCheckWater = NaN;
   const extractionEstimate = computeExtractionEstimate({
     brewTool,
-    values,
+    values: effectiveValues,
     dose: doseValue
   });
 
@@ -2328,7 +2345,7 @@ function buildRecipe(options = {}) {
   const finalFlavorProfile = computeFlavorProfile({
     coffeeType,
     brewTool,
-    values,
+    values: effectiveValues,
     blendRatio
   });
   const brewToolLabel = document.getElementById("brewTool")?.selectedOptions?.[0]?.textContent?.trim() || brewTool;
@@ -2540,8 +2557,11 @@ function buildRecipe(options = {}) {
   if (brewTool === "espresso") {
     const yieldAmount = manualOverrides.water ?? doseValue * Number(values.brewRatio);
     ratioCheckWater = yieldAmount;
+    const brewRatioValue = Number.isFinite(Number(effectiveValues.brewRatio))
+      ? Number(Number(effectiveValues.brewRatio).toFixed(2))
+      : values.brewRatio;
 
-    showStat("brewRatio", `1:${values.brewRatio} (g:g)`);
+    showStat("brewRatio", `1:${brewRatioValue} (g:g)`);
     showStat("shotTime", `${values.shotTime} detik`);
     showStat("pressure", `${values.pressure} bar`);
 
@@ -2695,7 +2715,7 @@ function buildRecipe(options = {}) {
   renderFlavorVisual(finalFlavorProfile);
 
   lastTuningContext = {
-    values,
+    values: effectiveValues,
     profile: finalFlavorProfile,
     brewTool,
     activeFields
@@ -2716,9 +2736,7 @@ function buildRecipe(options = {}) {
     processLabel,
     varietalLabel,
     settings: {
-      ...values,
-      dose: doseValue,
-      waterTemp: waterTempValue,
+      ...effectiveValues,
       blendRatio: blendRatio ? { robusta: blendRatio.robusta, arabica: blendRatio.arabica } : null
     },
     steps: steps.map(step => ({
