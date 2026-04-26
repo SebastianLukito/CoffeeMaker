@@ -2670,7 +2670,10 @@ function buildRecipe(options = {}) {
     mineralFlavor,
     agitationFlavor,
     blendFlavor
-  ].filter(Boolean).join(" ");
+  ]
+    .filter(Boolean)
+    .map(line => `- ${line}`)
+    .join("\n");
 
   steps.push({
     title: "Catatan rasa",

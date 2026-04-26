@@ -1260,6 +1260,8 @@ select::-ms-expand {
   margin: 8px 0 0;
   color: var(--muted);
   font-size: 0.95rem;
+  line-height: 1.58;
+  white-space: pre-line;
 }
 
 .aside {
