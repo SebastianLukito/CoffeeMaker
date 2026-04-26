@@ -1119,6 +1119,200 @@ function renderTuningAssistant(issue = "too-bitter") {
   tuningListEl.innerHTML = result.map(item => `<li>${item}</li>`).join("");
 }
 
+function getFieldDefinition(activeFields, fieldId) {
+  return activeFields.find(field => field.id === fieldId) || null;
+}
+
+function getFieldElement(fieldId) {
+  return document.getElementById(fieldId);
+}
+
+function findClosestNumericOption(options, targetValue) {
+  const candidates = options
+    .map(option => {
+      const numericValue = Number(option.value);
+      return Number.isFinite(numericValue) ? { option, numericValue } : null;
+    })
+    .filter(Boolean);
+
+  if (candidates.length === 0 || !Number.isFinite(targetValue)) {
+    return null;
+  }
+
+  candidates.sort((a, b) => Math.abs(a.numericValue - targetValue) - Math.abs(b.numericValue - targetValue));
+  return candidates[0].option;
+}
+
+function findClosestTimeOption(options, targetSeconds) {
+  const candidates = options
+    .map(option => {
+      const seconds = parseClockToSeconds(option.value);
+      return Number.isFinite(seconds) ? { option, seconds } : null;
+    })
+    .filter(Boolean);
+
+  if (candidates.length === 0 || !Number.isFinite(targetSeconds)) {
+    return null;
+  }
+
+  candidates.sort((a, b) => Math.abs(a.seconds - targetSeconds) - Math.abs(b.seconds - targetSeconds));
+  return candidates[0].option;
+}
+
+function setFieldValueFromTuning(fieldId, nextValue, context) {
+  const { activeFields } = context;
+  const field = getFieldDefinition(activeFields, fieldId);
+  const inputEl = getFieldElement(fieldId);
+  if (!field || !inputEl) {
+    return false;
+  }
+
+  let resolvedValue = nextValue;
+
+  if (field.type === "select" && Array.isArray(field.options)) {
+    const hasExact = field.options.some(option => option.value === String(nextValue));
+    if (!hasExact) {
+      if (typeof nextValue === "number") {
+        const closestNumeric = findClosestNumericOption(field.options, nextValue);
+        if (closestNumeric) {
+          resolvedValue = closestNumeric.value;
+        }
+      } else if (typeof nextValue === "object" && nextValue && Number.isFinite(nextValue.seconds)) {
+        const closestTime = findClosestTimeOption(field.options, nextValue.seconds);
+        if (closestTime) {
+          resolvedValue = closestTime.value;
+        }
+      }
+    }
+  }
+
+  const nextString = String(resolvedValue);
+  if (inputEl.value === nextString) {
+    return false;
+  }
+
+  inputEl.value = nextString;
+  inputEl.dispatchEvent(new Event("input", { bubbles: true }));
+  inputEl.dispatchEvent(new Event("change", { bubbles: true }));
+  return true;
+}
+
+function shiftDiscreteField(fieldId, order, direction, context) {
+  const { values } = context;
+  const currentValue = String(values[fieldId] || "");
+  const currentIndex = order.indexOf(currentValue);
+  if (currentIndex === -1) {
+    return false;
+  }
+  const nextIndex = clampNumber(currentIndex + direction, 0, order.length - 1);
+  if (nextIndex === currentIndex) {
+    return false;
+  }
+  return setFieldValueFromTuning(fieldId, order[nextIndex], context);
+}
+
+function shiftNumericField(fieldId, delta, context, minValue, maxValue) {
+  const { values } = context;
+  const currentValue = Number(values[fieldId]);
+  if (!Number.isFinite(currentValue)) {
+    return false;
+  }
+  const nextValue = clampNumber(currentValue + delta, minValue, maxValue);
+  return setFieldValueFromTuning(fieldId, nextValue, context);
+}
+
+function shiftFirstAvailableTimeField(fieldIds, deltaSeconds, context) {
+  const { values } = context;
+  for (const fieldId of fieldIds) {
+    const rawValue = values[fieldId];
+    const seconds = parseClockToSeconds(rawValue);
+    if (!Number.isFinite(seconds)) {
+      continue;
+    }
+    const nextSeconds = Math.max(10, seconds + deltaSeconds);
+    if (setFieldValueFromTuning(fieldId, { seconds: nextSeconds }, context)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function applyTuningIssue(issue, context) {
+  const { activeFields } = context;
+  const hasField = id => activeFields.some(field => field.id === id);
+  const appliedChanges = [];
+
+  const applyAndTrack = (label, fn) => {
+    if (fn()) {
+      appliedChanges.push(label);
+      return true;
+    }
+    return false;
+  };
+
+  if (issue === "too-bitter") {
+    applyAndTrack("suhu turun", () => shiftNumericField("waterTemp", -2, context, 75, 100));
+    if (hasField("ratio")) {
+      applyAndTrack("rasio air naik", () => shiftNumericField("ratio", 1, context, 6, 30));
+    } else if (hasField("brewRatio")) {
+      applyAndTrack("brew ratio naik", () => shiftNumericField("brewRatio", 0.2, context, 1.5, 4));
+    }
+    applyAndTrack("grind dibuat lebih kasar", () => shiftDiscreteField("grind", ["fine", "medium-fine", "medium", "coarse"], 1, context));
+    applyAndTrack("waktu seduh dipendekkan", () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], -15, context));
+    applyAndTrack("agitasi diturunkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], -1, context));
+  }
+
+  if (issue === "too-sour") {
+    applyAndTrack("suhu dinaikkan", () => shiftNumericField("waterTemp", 2, context, 75, 100));
+    if (hasField("ratio")) {
+      applyAndTrack("rasio dibuat lebih pekat", () => shiftNumericField("ratio", -1, context, 6, 30));
+    } else if (hasField("brewRatio")) {
+      applyAndTrack("brew ratio diturunkan", () => shiftNumericField("brewRatio", -0.2, context, 1.5, 4));
+    }
+    applyAndTrack("grind dibuat lebih halus", () => shiftDiscreteField("grind", ["coarse", "medium", "medium-fine", "fine"], 1, context));
+    applyAndTrack("waktu seduh ditambah", () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], 15, context));
+    applyAndTrack("agitasi dinaikkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], 1, context));
+  }
+
+  if (issue === "too-thin") {
+    if (hasField("ratio")) {
+      applyAndTrack("rasio dibuat lebih pekat", () => shiftNumericField("ratio", -1, context, 6, 30));
+    } else if (hasField("brewRatio")) {
+      applyAndTrack("brew ratio diturunkan", () => shiftNumericField("brewRatio", -0.2, context, 1.5, 4));
+    }
+    applyAndTrack("grind dibuat lebih halus", () => shiftDiscreteField("grind", ["coarse", "medium", "medium-fine", "fine"], 1, context));
+    applyAndTrack("agitasi dinaikkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], 1, context));
+  }
+
+  if (issue === "too-heavy") {
+    if (hasField("ratio")) {
+      applyAndTrack("rasio air dinaikkan", () => shiftNumericField("ratio", 1, context, 6, 30));
+    } else if (hasField("brewRatio")) {
+      applyAndTrack("brew ratio dinaikkan", () => shiftNumericField("brewRatio", 0.2, context, 1.5, 4));
+    }
+    applyAndTrack("grind dibuat lebih kasar", () => shiftDiscreteField("grind", ["fine", "medium-fine", "medium", "coarse"], 1, context));
+    applyAndTrack("agitasi diturunkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], -1, context));
+  }
+
+  if (issue === "too-flat") {
+    applyAndTrack("suhu dinaikkan tipis", () => shiftNumericField("waterTemp", 1, context, 75, 100));
+    applyAndTrack("agitasi dinaikkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], 1, context));
+    applyAndTrack("grind dibuat lebih halus", () => shiftDiscreteField("grind", ["coarse", "medium", "medium-fine", "fine"], 1, context));
+  }
+
+  if (issue === "too-dry") {
+    applyAndTrack("suhu diturunkan tipis", () => shiftNumericField("waterTemp", -1, context, 75, 100));
+    if (hasField("ratio")) {
+      applyAndTrack("rasio air dinaikkan", () => shiftNumericField("ratio", 1, context, 6, 30));
+    } else if (hasField("brewRatio")) {
+      applyAndTrack("brew ratio dinaikkan", () => shiftNumericField("brewRatio", 0.2, context, 1.5, 4));
+    }
+    applyAndTrack("agitasi diturunkan", () => shiftDiscreteField("agitation", ["gentle", "medium", "high"], -1, context));
+  }
+
+  return appliedChanges;
+}
+
 function createFlavorBaseProfile() {
   return {
     acidity: 5,
@@ -1367,6 +1561,22 @@ function computeFlavorProfile({ coffeeType, brewTool, values, blendRatio }) {
     profile.acidity -= delta * 0.2;
     profile.sweetness += delta * 0.1;
     profile.bitterness += delta * 0.24;
+
+    if (ratio >= 18) {
+      const dilutionImpact = (ratio - 18) * 0.45;
+      profile.acidity -= dilutionImpact;
+      profile.sweetness -= dilutionImpact * 1.05;
+      profile.bitterness -= dilutionImpact * 1.08;
+      profile.aroma -= dilutionImpact * 1.02;
+      profile.body -= dilutionImpact * 0.9;
+    } else if (ratio <= 10) {
+      const concentrationImpact = (10 - ratio) * 0.52;
+      profile.body += concentrationImpact * 1.15;
+      profile.bitterness += concentrationImpact * 0.95;
+      profile.sweetness += concentrationImpact * 0.4;
+      profile.aroma += concentrationImpact * 0.25;
+      profile.acidity -= concentrationImpact * 0.2;
+    }
   }
 
   const temp = Number(values.waterTemp);
@@ -1377,6 +1587,23 @@ function computeFlavorProfile({ coffeeType, brewTool, values, blendRatio }) {
     profile.sweetness -= Math.max(0, delta) * 0.04;
     profile.bitterness += Math.max(0, delta) * 0.08;
     profile.aroma += Math.max(0, 93 - temp) * 0.04;
+
+    if (temp <= 88) {
+      const coldPenalty = (88 - temp) * 0.5;
+      profile.acidity -= coldPenalty * 1.1;
+      profile.sweetness -= coldPenalty * 1.2;
+      profile.bitterness -= coldPenalty * 1.15;
+      profile.aroma -= coldPenalty * 1.25;
+      profile.body -= coldPenalty * 0.7;
+    }
+
+    if (temp >= 96) {
+      const hotPenalty = (temp - 96) * 0.35;
+      profile.sweetness -= hotPenalty * 0.8;
+      profile.aroma -= hotPenalty * 0.6;
+      profile.bitterness += hotPenalty * 0.9;
+      profile.body += hotPenalty * 0.4;
+    }
   }
 
   const timeSeconds = resolvePrimaryTimeSeconds(values);
@@ -2770,6 +2997,140 @@ function setManualOverridesExpanded(expanded) {
   }
 }
 
+function findClosestOptionValue(options, target) {
+  if (!Array.isArray(options) || options.length === 0) {
+    return null;
+  }
+
+  const targetNumber = Number(target);
+  if (!Number.isFinite(targetNumber)) {
+    const exact = options.find(option => String(option.value) === String(target));
+    return exact ? String(exact.value) : null;
+  }
+
+  const ranked = options
+    .map(option => {
+      const optionNumber = Number(option.value);
+      if (!Number.isFinite(optionNumber)) {
+        return null;
+      }
+      return { value: String(option.value), diff: Math.abs(optionNumber - targetNumber) };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.diff - b.diff);
+
+  return ranked.length > 0 ? ranked[0].value : null;
+}
+
+function applyDashboardEditRecipe(recipe) {
+  if (!recipe || typeof recipe !== "object") {
+    return;
+  }
+
+  const settings = recipe.settings || {};
+  const coffeeTypeEl = document.getElementById("coffeeType");
+  const brewToolEl = document.getElementById("brewTool");
+  if (!coffeeTypeEl || !brewToolEl) {
+    return;
+  }
+
+  const targetCoffeeType = recipe.coffeeType || coffeeTypeEl.value;
+  const targetBrewTool = recipe.brewTool || brewToolEl.value;
+
+  if (targetCoffeeType) {
+    coffeeTypeEl.value = targetCoffeeType;
+    toggleBlendControls(targetCoffeeType);
+    toggleCustomControls(targetCoffeeType);
+    if (targetCoffeeType === "blend" && settings.blendRatio) {
+      if (blendRobustaEl) {
+        blendRobustaEl.value = String(settings.blendRatio.robusta ?? blendRobustaEl.value);
+      }
+      if (blendArabicaEl) {
+        blendArabicaEl.value = String(settings.blendRatio.arabica ?? blendArabicaEl.value);
+      }
+      syncBlendInputs("robusta");
+    }
+  }
+
+  if (targetBrewTool) {
+    brewToolEl.value = targetBrewTool;
+    renderToolFields(targetBrewTool);
+  }
+
+  const toolConfig = toolConfigs[targetBrewTool] || null;
+  const activeFields = toolConfig ? getActiveFields(toolConfig) : [];
+  activeFields.forEach(field => {
+    const fieldEl = document.getElementById(field.id);
+    if (!fieldEl || settings[field.id] === undefined || settings[field.id] === null) {
+      return;
+    }
+
+    let nextValue = settings[field.id];
+    if (field.type === "select") {
+      const hasExactOption = Array.isArray(field.options)
+        ? field.options.some(option => String(option.value) === String(nextValue))
+        : false;
+      if (!hasExactOption) {
+        const closest = findClosestOptionValue(field.options, nextValue);
+        if (closest !== null) {
+          nextValue = closest;
+        }
+      }
+    }
+
+    fieldEl.value = String(nextValue);
+  });
+
+  const recipeNameEl = document.getElementById("recipeName");
+  if (recipeNameEl) {
+    recipeNameEl.value = recipe.recipeName || recipe.title || "";
+  }
+
+  const recipeNoteEl = document.getElementById("recipeNote");
+  if (recipeNoteEl) {
+    recipeNoteEl.value = recipe.notes || "";
+  }
+
+  if (manualDoseEl) {
+    manualDoseEl.value = recipe.manualDose != null ? String(recipe.manualDose) : "";
+  }
+  if (manualWaterEl) {
+    manualWaterEl.value = recipe.manualWater != null ? String(recipe.manualWater) : "";
+  }
+  if (manualWaterTempEl) {
+    manualWaterTempEl.value = recipe.manualWaterTemp != null ? String(recipe.manualWaterTemp) : "";
+  }
+
+  updateProgressiveVisibility();
+  buildRecipe();
+}
+
+function tryApplyDashboardEditRecipe() {
+  let payload = null;
+  try {
+    payload = sessionStorage.getItem("brew:editRecipe");
+  } catch {
+    payload = null;
+  }
+
+  if (!payload) {
+    return;
+  }
+
+  try {
+    const recipe = JSON.parse(payload);
+    applyDashboardEditRecipe(recipe);
+  } catch {
+    // Ignore malformed payload.
+  }
+
+  try {
+    sessionStorage.removeItem("brew:editRecipe");
+  } catch {
+    // Ignore cleanup failures.
+  }
+}
+
 if (generateBtn) {
   generateBtn.addEventListener("click", () => {
     replayClass(generateBtn, "btn-pulse");
@@ -2804,13 +3165,34 @@ document.getElementById("brewTool").addEventListener("change", event => {
 toolFieldsEl.addEventListener("input", buildRecipe);
 toolFieldsEl.addEventListener("change", buildRecipe);
 if (runTuningEl) {
+  runTuningEl.classList.add("is-hidden");
+  runTuningEl.setAttribute("aria-hidden", "true");
   runTuningEl.addEventListener("click", () => {
     replayClass(runTuningEl, "btn-pulse");
-    renderTuningAssistant(tasteIssueEl?.value || "too-bitter");
+    if (!tasteIssueEl || !lastTuningContext) {
+      return;
+    }
+
+    const issue = tasteIssueEl.value || "too-bitter";
+    const appliedChanges = applyTuningIssue(issue, lastTuningContext);
+
+    if (appliedChanges.length > 0) {
+      buildRecipe({ animateCup: true });
+      renderTuningAssistant(issue);
+      if (tuningSummaryEl) {
+        tuningSummaryEl.textContent = `Saran diterapkan: ${appliedChanges.join(", ")}.`;
+      }
+    } else if (tuningSummaryEl) {
+      tuningSummaryEl.textContent = "Belum ada parameter yang bisa diubah otomatis untuk mode ini.";
+    }
   });
 }
 if (tasteIssueEl) {
   tasteIssueEl.addEventListener("change", () => {
+    if (runTuningEl) {
+      runTuningEl.classList.remove("is-hidden");
+      runTuningEl.removeAttribute("aria-hidden");
+    }
     renderTuningAssistant(tasteIssueEl.value);
   });
 }
@@ -2831,3 +3213,4 @@ hydrateHoverHelp();
 updateProgressiveVisibility();
 setupCoffeeSpillBackground();
 buildRecipe();
+tryApplyDashboardEditRecipe();
