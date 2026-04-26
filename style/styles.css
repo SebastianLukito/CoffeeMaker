@@ -145,6 +145,8 @@ header {
 .hero-intro {
   grid-area: intro;
   max-width: 64ch;
+  display: grid;
+  gap: 14px;
   animation: fade-up 0.85s 0.08s var(--ease-out) both;
 }
 
@@ -155,14 +157,43 @@ header {
 .hero-intro h1 {
   font-family: "Fraunces", serif;
   font-size: clamp(2.4rem, 2.6vw + 1.4rem, 4rem);
-  margin: 0 0 12px;
+  line-height: 0.95;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+  margin-top: 26px;
+}
+
+.hero-intro h1 span {
+  display: block;
+}
+
+.hero-intro h1 span:first-child {
+  white-space: nowrap;
 }
 
 .hero-intro p {
-  margin: 0 0 22px;
+  margin: 0;
   color: var(--muted);
   font-size: 1.05rem;
   max-width: 45ch;
+  margin-top: 15px;
+}
+
+.beginner-guide {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.beginner-chip {
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(34, 27, 22, 0.1);
+  color: #53463c;
+  font-size: 0.86rem;
+  box-shadow: 0 8px 18px rgba(34, 27, 22, 0.06);
 }
 
 .pill {
@@ -346,6 +377,135 @@ header {
   gap: 12px;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
+}
+
+.manual-toggle-btn {
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid rgba(74, 127, 107, 0.24);
+  background: rgba(74, 127, 107, 0.12);
+  color: #2f5a49;
+  border-radius: 999px;
+  padding: 10px 14px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.manual-toggle-btn:hover {
+  background: rgba(74, 127, 107, 0.18);
+}
+
+.recipe-meta {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(34, 27, 22, 0.1);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.92) 0%, rgba(248, 241, 231, 0.9) 100%);
+  display: grid;
+  gap: 14px;
+}
+
+.manual-overrides {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid rgba(74, 127, 107, 0.15);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.94) 0%, rgba(242, 250, 246, 0.88) 100%);
+  display: grid;
+  gap: 12px;
+  overflow: hidden;
+  max-height: 520px;
+  opacity: 1;
+  transform: translateY(0);
+  transition: max-height 0.38s var(--ease-out), opacity 0.24s ease, transform 0.38s var(--ease-out), padding 0.38s var(--ease-out), margin-top 0.38s var(--ease-out);
+  will-change: max-height, opacity, transform;
+}
+
+.manual-overrides.is-collapsed {
+  max-height: 0;
+  opacity: 0;
+  transform: translateY(-10px);
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-top: 0;
+  pointer-events: none;
+}
+
+.manual-overrides-head h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.manual-overrides-head p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.88rem;
+}
+
+.manual-overrides-grid {
+  gap: 12px;
+}
+
+.manual-overrides-note {
+  margin: 0;
+  color: #5f4f43;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.ratio-warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(208, 123, 58, 0.22);
+  background: rgba(255, 242, 229, 0.82);
+  color: #87501f;
+  font-size: 0.88rem;
+  line-height: 1.45;
+}
+
+.ratio-warning.is-hidden {
+  display: none;
+}
+
+.recipe-name-field input {
+  font-size: 1.08rem;
+}
+
+.recipe-note-field textarea {
+  width: 100%;
+  min-height: 136px;
+  resize: vertical;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(34, 27, 22, 0.15);
+  background: #fff;
+  font: inherit;
+  line-height: 1.5;
+}
+
+.recipe-note-field textarea:focus {
+  outline: none;
+  border-color: rgba(74, 127, 107, 0.9);
+  box-shadow: 0 0 0 4px rgba(74, 127, 107, 0.15);
+}
+
+.ratio-hint {
+  margin: 0;
+  color: #5f4f43;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px dashed rgba(34, 27, 22, 0.18);
+  background: rgba(255, 255, 255, 0.68);
 }
 
 .cup-fill-indicator {
@@ -1266,7 +1426,20 @@ footer {
   padding: 28px 8vw 50px;
   color: var(--muted);
   font-size: 0.9rem;
+  text-align: center;
+  max-width: 78ch;
+  margin: 0 auto;
   animation: fade-up 0.85s 0.28s var(--ease-out) both;
+}
+
+@media (max-width: 720px) {
+  .hero-intro h1 span:first-child {
+    white-space: normal;
+  }
+
+  .beginner-guide {
+    flex-direction: column;
+  }
 }
 
 header,

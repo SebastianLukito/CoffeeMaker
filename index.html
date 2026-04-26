@@ -30,8 +30,13 @@
 
   <section class="hero">
     <div class="hero-intro">
-      <h1>Racik Javanese Iced Coffee, personal dan presisi.</h1>
+      <h1><span>Racik Javanese Iced Coffee</span><span>yang personal dan presisi.</span></h1>
       <p>Pilih kopi, alat seduh, dan variabel rasa yang relevan untuk setiap metode. Sistem akan menyesuaikan langkah seduh sesuai alat yang dipilih.</p>
+      <div class="beginner-guide" aria-label="Panduan singkat untuk pemula">
+        <div class="beginner-chip">Mulai dari 20g kopi untuk 1 cangkir.</div>
+        <div class="beginner-chip">Air 90-94°C cocok untuk banyak metode manual.</div>
+        <div class="beginner-chip">Tekan Start satu per satu, jangan langsung loncat ke step berikutnya.</div>
+      </div>
     </div>
 
     <div class="card hero-card">
@@ -95,9 +100,49 @@
 
         <div class="grid two" id="toolFields"></div>
 
+        <button class="manual-toggle-btn" id="manualToggleBtn" type="button" aria-expanded="false">Tampilkan kustom manual</button>
+
+        <div class="manual-overrides is-collapsed" id="manualOverridesPanel">
+          <div class="manual-overrides-head">
+            <h3>Kustom manual untuk pemula</h3>
+            <p>Isi kalau mau pakai angka sendiri. Kosongkan kalau mau ikut rekomendasi otomatis.</p>
+          </div>
+
+          <div class="grid two manual-overrides-grid">
+            <div>
+              <label for="manualDose">Gram kopi (custom)</label>
+              <input id="manualDose" type="number" min="0" step="0.1" placeholder="Misal: 20" />
+            </div>
+            <div>
+              <label for="manualWater">Air (ml, custom)</label>
+              <input id="manualWater" type="number" min="0" step="1" placeholder="Misal: 280" />
+            </div>
+            <div>
+              <label for="manualWaterTemp">Suhu air (°C, custom)</label>
+              <input id="manualWaterTemp" type="number" min="0" step="1" placeholder="Misal: 92" />
+            </div>
+          </div>
+
+          <p class="manual-overrides-note">Kalau angka yang dimasukkan terlalu kecil atau terlalu besar, sistem akan memberi peringatan kecil di bawah ini.</p>
+          <p class="ratio-warning is-hidden" id="ratioWarning" aria-live="polite"></p>
+        </div>
+
+        <div class="recipe-meta">
+          <div class="recipe-name-field">
+            <label for="recipeName">Nama kopi / nama resep</label>
+            <input id="recipeName" type="text" placeholder="Misal: Kopi Kesukaan Papa" />
+          </div>
+
+          <div class="recipe-note-field">
+            <label for="recipeNote">Note khusus resep</label>
+            <textarea id="recipeNote" rows="5" placeholder="Tulis catatan untuk barista atau catatan pribadi: preferensi rasa, penyajian, atau detail lain yang ingin disimpan."></textarea>
+          </div>
+
+          <p class="ratio-hint">Contoh rasio 1:10 berarti 1 gram kopi untuk 10 ml air. Untuk espresso, rasio brew dihitung gram kopi : gram hasil seduhan.</p>
+        </div>
+
         <div class="action-row">
-          <button class="btn" id="generate">Buat langkah seduh</button>
-          <button class="btn btn-secondary" id="saveRecipeBtn" type="button">Simpan ke Dashboard</button>
+          <button class="btn btn-secondary" id="saveRecipeBtn" type="button" hidden>Simpan ke Dashboard</button>
           <p class="save-status" id="saveStatus" aria-live="polite">Login untuk menyimpan resep personal.</p>
         </div>
 
@@ -121,7 +166,7 @@
       <div class="stat" data-stat="firstPour"><span>Tuangan 1</span><span class="tag" id="firstPour">110 ml</span></div>
       <div class="stat" data-stat="secondPour"><span>Tuangan 2</span><span class="tag" id="secondPour">110 ml</span></div>
       <div class="stat" data-stat="iceWater"><span>Air dingin</span><span class="tag" id="iceWater">120 ml</span></div>
-      <div class="stat" data-stat="brewRatio"><span>Rasio brew</span><span class="tag" id="brewRatioProfile">1:2</span></div>
+      <div class="stat" data-stat="brewRatio"><span>Rasio brew (g : g)</span><span class="tag" id="brewRatioProfile">1:2 (g:g)</span></div>
       <div class="stat" data-stat="shotTime"><span>Shot time</span><span class="tag" id="shotTimeProfile">28 detik</span></div>
       <div class="stat" data-stat="pressure"><span>Pressure</span><span class="tag" id="pressureProfile">9 bar</span></div>
       <div class="stat" data-stat="steepTime"><span>Steep time</span><span class="tag" id="steepTimeProfile">3:30</span></div>

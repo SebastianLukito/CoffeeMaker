@@ -7,6 +7,12 @@ const advancedOptionsEl = document.getElementById("advancedOptions");
 const setupHintEl = document.getElementById("setupHint");
 const blendRobustaEl = document.getElementById("blendRobusta");
 const blendArabicaEl = document.getElementById("blendArabica");
+const manualDoseEl = document.getElementById("manualDose");
+const manualWaterEl = document.getElementById("manualWater");
+const manualWaterTempEl = document.getElementById("manualWaterTemp");
+const ratioWarningEl = document.getElementById("ratioWarning");
+const manualToggleBtn = document.getElementById("manualToggleBtn");
+const manualOverridesPanelEl = document.getElementById("manualOverridesPanel");
 const cupFillIndicatorEl = document.getElementById("cupFillIndicator");
 const cupFillTextEl = document.getElementById("cupFillText");
 const flavorVisualEl = document.getElementById("flavorVisual");
@@ -369,7 +375,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
@@ -381,7 +387,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
@@ -393,7 +399,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioPourOver, default: "16" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "16" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "waterHardness", label: "Mineral air", type: "select", options: options.waterHardness, default: "balanced" },
       { id: "agitation", label: "Agitasi", type: "select", options: options.agitation, default: "gentle" },
@@ -405,7 +411,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "fine" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 12, max: 25, step: 1, default: 18 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioImmersion, default: "13" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioImmersion, default: "13" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "90" },
       { id: "steepTime", label: "Steep time", type: "select", options: options.steepTime, default: "1:30" },
       { id: "pressTime", label: "Press time", type: "select", options: options.pressTime, default: "0:30" }
@@ -416,7 +422,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 30, step: 1, default: 22 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioImmersion, default: "15" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioImmersion, default: "15" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "steepTime", label: "Steep time", type: "select", options: options.steepTime, default: "4:00" }
     ]
@@ -426,7 +432,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindAll, default: "medium" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "light" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 30, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioPourOver, default: "14" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioPourOver, default: "14" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "92" },
       { id: "brewTime", label: "Brew time", type: "select", options: options.brewTime, default: "1:30" },
       { id: "drawdownTime", label: "Drawdown time", type: "select", options: options.drawdownTime, default: "0:45" }
@@ -437,7 +443,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindEspresso, default: "fine" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 16, max: 22, step: 1, default: 18 },
-      { id: "brewRatio", label: "Rasio brew (1:x)", type: "select", options: options.brewRatioEspresso, default: "2" },
+      { id: "brewRatio", label: "Rasio brew (gram : gram, 1:x)", type: "select", options: options.brewRatioEspresso, default: "2" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "93" },
       { id: "shotTime", label: "Shot time", type: "select", options: options.shotTime, default: "28" },
       { id: "pressure", label: "Pressure", type: "select", options: options.pressure, default: "9" }
@@ -448,7 +454,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindEspresso, default: "medium-fine" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "dark" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 15, max: 28, step: 1, default: 20 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioMoka, default: "7" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioMoka, default: "7" },
       { id: "waterTemp", label: "Suhu air", type: "select", options: options.waterTemp, default: "90" }
     ]
   },
@@ -457,7 +463,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 30, max: 90, step: 5, default: 60 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioColdBrew, default: "8" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioColdBrew, default: "8" },
       { id: "steepTimeCold", label: "Waktu perendaman", type: "select", options: options.steepTimeCold, default: "16" },
       { id: "icePercent", label: "Persen air dingin saat serving", type: "select", options: options.icePercent, default: "35" }
     ]
@@ -467,7 +473,7 @@ const toolConfigs = {
       { id: "grind", label: "Jenis gilingan", type: "select", options: options.grindImmersion, default: "coarse" },
       { id: "roastLevel", label: "Roast level", type: "select", options: options.roast, default: "medium" },
       { id: "dose", label: "Gramasi kopi (gram)", type: "number", min: 30, max: 80, step: 5, default: 50 },
-      { id: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: options.ratioColdDrip, default: "10" },
+      { id: "ratio", label: "Rasio kopi:air (gram : ml, 1:x)", type: "select", options: options.ratioColdDrip, default: "10" },
       { id: "dripRate", label: "Drip rate", type: "select", options: options.dripRate, default: "2" },
       { id: "dripTime", label: "Drip time", type: "select", options: options.dripTime, default: "3" }
     ]
@@ -634,6 +640,74 @@ function resolveCoffeeLabel(coffeeType) {
   }
 
   return coffeeLabels[coffeeType] || "Kopi pilihan";
+}
+
+function resolveRecipeTitle(coffeeLabel, brewToolLabel) {
+  const recipeNameEl = document.getElementById("recipeName");
+  const recipeName = recipeNameEl ? recipeNameEl.value.trim() : "";
+
+  if (recipeName) {
+    return recipeName;
+  }
+
+  return `${coffeeLabel} - ${brewToolLabel}`;
+}
+
+function getManualNumericValue(element) {
+  if (!element) {
+    return null;
+  }
+
+  const value = Number(element.value);
+  if (!Number.isFinite(value) || value <= 0) {
+    return null;
+  }
+
+  return value;
+}
+
+function getManualBrewOverrides() {
+  return {
+    dose: getManualNumericValue(manualDoseEl),
+    water: getManualNumericValue(manualWaterEl),
+    waterTemp: getManualNumericValue(manualWaterTempEl)
+  };
+}
+
+function getRatioWarningMessage(dose, water, brewTool) {
+  if (!Number.isFinite(dose) || !Number.isFinite(water) || dose <= 0 || water <= 0) {
+    return "Masukkan angka kopi dan air yang valid dulu.";
+  }
+
+  if (dose < 5) {
+    return "Gram kopi terlalu kecil. Pastikan satuannya gram, bukan miligram.";
+  }
+
+  if (dose > 2000) {
+    return "Gram kopi terlalu besar. Pastikan tidak salah pilih satuan, misalnya kilogram atau ton.";
+  }
+
+  if (water < 30) {
+    return "Air terlalu sedikit. Pastikan satuannya ml, bukan tetes atau gram yang belum dikonversi.";
+  }
+
+  if (water > 5000) {
+    return "Volume air sangat besar. Cek lagi apakah angka yang dimasukkan sudah benar.";
+  }
+
+  const ratio = water / dose;
+  if (brewTool === "espresso") {
+    if (ratio < 1 || ratio > 4) {
+      return "Rasio espresso terlihat tidak wajar. Biasanya berada di kisaran 1:2 sampai 1:3.";
+    }
+    return "";
+  }
+
+  if (ratio < 4 || ratio > 25) {
+    return "Rasio kopi dan air terlihat tidak wajar. Coba cek lagi apakah angka sudah dalam gram dan ml.";
+  }
+
+  return "";
 }
 
 function toggleBlendControls(coffeeType) {
@@ -1652,14 +1726,41 @@ function updateStageCardClasses() {
   });
 }
 
+function getVisibleTimerStepIndex() {
+  if (brewTimerState.activeIndex >= 0) {
+    return brewTimerState.activeIndex;
+  }
+
+  return getNextPendingStepIndex();
+}
+
 function updateStepControls() {
+  const visibleIndex = getVisibleTimerStepIndex();
+
   brewTimerState.stepMeta.forEach(step => {
-    if (step.durationSec <= 0) {
+    const card = recipeEl.querySelector(`.step[data-step-index="${step.index}"]`);
+    if (!card) {
       return;
     }
 
-    const btn = recipeEl.querySelector(`.step-start-btn[data-step-index="${step.index}"]`);
-    const display = document.getElementById(`stepTimerDisplay-${step.index}`);
+    const controls = card.querySelector(".step-timer-controls");
+    const passive = card.querySelector(".step-timer-passive");
+    const shouldShowTimedControls = step.durationSec > 0 && step.index === visibleIndex;
+
+    if (controls) {
+      controls.hidden = !shouldShowTimedControls;
+    }
+
+    if (passive) {
+      passive.hidden = step.durationSec > 0;
+    }
+
+    if (step.durationSec <= 0 || !shouldShowTimedControls) {
+      return;
+    }
+
+    const btn = card.querySelector(`.step-start-btn[data-step-index="${step.index}"]`);
+    const display = card.querySelector(`#stepTimerDisplay-${step.index}`);
     if (!btn || !display) {
       return;
     }
@@ -1903,6 +2004,11 @@ function buildRecipe(options = {}) {
     fieldState[field.id] = value;
   });
 
+  const manualOverrides = getManualBrewOverrides();
+  const doseValue = manualOverrides.dose ?? values.dose;
+  const waterTempValue = manualOverrides.waterTemp ?? values.waterTemp;
+  let ratioCheckWater = NaN;
+
   const coffeeLabel = resolveCoffeeLabel(coffeeType);
   const blendRatio = coffeeType === "blend" ? getBlendRatio() : null;
   const finalFlavorProfile = computeFlavorProfile({
@@ -1911,6 +2017,8 @@ function buildRecipe(options = {}) {
     values,
     blendRatio
   });
+  const brewToolLabel = document.getElementById("brewTool")?.selectedOptions?.[0]?.textContent?.trim() || brewTool;
+  const recipeTitle = resolveRecipeTitle(coffeeLabel, brewToolLabel);
 
   const processField = activeFields.find(field => field.id === "processMethod");
   const varietalField = activeFields.find(field => field.id === "varietal");
@@ -1952,8 +2060,8 @@ function buildRecipe(options = {}) {
     const roastField = activeFields.find(field => field.id === "roastLevel");
     showStat("roast", optionLabel(roastField, values.roastLevel));
   }
-  if (values.waterTemp) {
-    showStat("temp", `${values.waterTemp}°C`);
+  if (waterTempValue) {
+    showStat("temp", `${waterTempValue}°C`);
   }
   if (values.waterHardness) {
     const mineralField = activeFields.find(field => field.id === "waterHardness");
@@ -1975,8 +2083,9 @@ function buildRecipe(options = {}) {
   }
 
   if (["v60", "kalita", "chemex"].includes(brewTool)) {
-    const totalWater = values.dose * Number(values.ratio);
-    const bloomWater = values.dose * 3;
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    const bloomWater = doseValue * 3;
+    ratioCheckWater = totalWater;
     const remainingWater = Math.max(totalWater - bloomWater, 0);
     const firstPour = remainingWater * 0.5;
     const secondPour = remainingWater - firstPour;
@@ -1990,12 +2099,12 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter, panaskan server, lalu buang airnya.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter, panaskan server, lalu buang airnya.`,
         durationSec: 60
       },
       {
         title: "Blooming",
-        desc: `Tuang ${formatMl(bloomWater)} air panas (${values.waterTemp}°C). Aduk ringan, diamkan 35-45 detik.`,
+        desc: `Tuang ${formatMl(bloomWater)} air panas (${waterTempValue}°C). Aduk ringan, diamkan 35-45 detik.`,
         durationSec: 45
       },
       {
@@ -2017,7 +2126,8 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "aeropress") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
 
     showStat("steepTime", values.steepTime);
     showStat("totalWater", formatMl(totalWater));
@@ -2025,12 +2135,12 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter dan preheat chamber.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter dan preheat chamber.`,
         durationSec: 45
       },
       {
         title: "Seduh",
-        desc: `Tuang ${formatMl(totalWater)} air panas (${values.waterTemp}°C). Aduk 10 detik, diamkan ${values.steepTime}.`,
+        desc: `Tuang ${formatMl(totalWater)} air panas (${waterTempValue}°C). Aduk 10 detik, diamkan ${values.steepTime}.`,
         durationSec: Math.max(20, parseClockToSeconds(values.steepTime) || 90)
       },
       {
@@ -2047,7 +2157,8 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "frenchpress") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
 
     showStat("steepTime", values.steepTime);
     showStat("totalWater", formatMl(totalWater));
@@ -2055,12 +2166,12 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan french press.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan french press.`,
         durationSec: 45
       },
       {
         title: "Seduh",
-        desc: `Tuang ${formatMl(totalWater)} air panas (${values.waterTemp}°C). Aduk 2-3 kali, diamkan ${values.steepTime}.`,
+        desc: `Tuang ${formatMl(totalWater)} air panas (${waterTempValue}°C). Aduk 2-3 kali, diamkan ${values.steepTime}.`,
         durationSec: Math.max(30, parseClockToSeconds(values.steepTime) || 240)
       },
       {
@@ -2077,7 +2188,8 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "syphon") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
 
     showStat("time", values.brewTime);
     showStat("drawdownTime", values.drawdownTime);
@@ -2086,7 +2198,7 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan ${formatMl(totalWater)} air (${values.waterTemp}°C) di lower chamber.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan ${formatMl(totalWater)} air (${waterTempValue}°C) di lower chamber.`,
         durationSec: 60
       },
       {
@@ -2108,21 +2220,22 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "espresso") {
-    const yieldAmount = values.dose * Number(values.brewRatio);
+    const yieldAmount = manualOverrides.water ?? doseValue * Number(values.brewRatio);
+    ratioCheckWater = yieldAmount;
 
-    showStat("brewRatio", `1:${values.brewRatio}`);
+    showStat("brewRatio", `1:${values.brewRatio} (g:g)`);
     showStat("shotTime", `${values.shotTime} detik`);
     showStat("pressure", `${values.pressure} bar`);
 
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Distribusi dan tamping merata.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Distribusi dan tamping merata.`,
         durationSec: 45
       },
       {
         title: "Extraction",
-        desc: `Seduh pada ${values.pressure} bar, ${values.waterTemp}°C selama ${values.shotTime} detik. Target yield ${formatMl(yieldAmount)}.`,
+        desc: `Seduh pada ${values.pressure} bar, ${waterTempValue}°C selama ${values.shotTime} detik. Target yield ${formatMl(yieldAmount)}.`,
         durationSec: Math.max(15, Number(values.shotTime) || 28)
       },
       {
@@ -2134,19 +2247,20 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "mokapot") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
 
     showStat("totalWater", formatMl(totalWater));
 
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
         durationSec: 45
       },
       {
         title: "Brew",
-        desc: `Isi base dengan ${formatMl(totalWater)} air (${values.waterTemp}°C). Pasang basket tanpa menekan, seduh dengan api kecil hingga warna mulai menguning.`,
+        desc: `Isi base dengan ${formatMl(totalWater)} air (${waterTempValue}°C). Pasang basket tanpa menekan, seduh dengan api kecil hingga warna mulai menguning.`,
         durationSec: 120
       },
       {
@@ -2158,7 +2272,8 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "coldBrew") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
     const serveDilution = totalWater * (Number(values.icePercent) / 100);
 
     showStat("steepTime", `${values.steepTimeCold} jam`);
@@ -2168,7 +2283,7 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
         durationSec: 60
       },
       {
@@ -2195,7 +2310,8 @@ function buildRecipe(options = {}) {
   }
 
   if (brewTool === "coldDrip") {
-    const totalWater = values.dose * Number(values.ratio);
+    const totalWater = manualOverrides.water ?? doseValue * Number(values.ratio);
+    ratioCheckWater = totalWater;
 
     showStat("totalWater", formatMl(totalWater));
     showStat("dripRate", `${values.dripRate} tetes/detik`);
@@ -2204,7 +2320,7 @@ function buildRecipe(options = {}) {
     steps.push(
       {
         title: "Persiapan",
-        desc: `Gunakan ${values.dose}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
+        desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
         durationSec: 60
       },
       {
@@ -2243,6 +2359,17 @@ function buildRecipe(options = {}) {
     desc: flavorNarrative
   });
 
+  const ratioWarningMessage = getRatioWarningMessage(doseValue, ratioCheckWater, brewTool);
+  if (ratioWarningEl) {
+    if (ratioWarningMessage) {
+      ratioWarningEl.textContent = ratioWarningMessage;
+      ratioWarningEl.classList.remove("is-hidden");
+    } else {
+      ratioWarningEl.textContent = "";
+      ratioWarningEl.classList.add("is-hidden");
+    }
+  }
+
   renderRecipeWithTimers(steps);
   renderFlavorVisual(finalFlavorProfile);
 
@@ -2255,17 +2382,22 @@ function buildRecipe(options = {}) {
   setTuningAssistantVisibility(true);
   renderTuningAssistant(tasteIssueEl?.value || "too-bitter");
 
-  const brewToolLabel = document.getElementById("brewTool")?.selectedOptions?.[0]?.textContent?.trim() || brewTool;
   const recipeSnapshot = {
-    title: `${coffeeLabel} - ${brewToolLabel}`,
+    title: recipeTitle,
     coffeeType,
     coffeeLabel,
     brewTool,
     brewToolLabel,
+    recipeName: document.getElementById("recipeName")?.value.trim() || "",
+    manualDose: manualOverrides.dose,
+    manualWater: manualOverrides.water,
+    manualWaterTemp: manualOverrides.waterTemp,
     processLabel,
     varietalLabel,
     settings: {
       ...values,
+      dose: doseValue,
+      waterTemp: waterTempValue,
       blendRatio: blendRatio ? { robusta: blendRatio.robusta, arabica: blendRatio.arabica } : null
     },
     steps: steps.map(step => ({
@@ -2287,10 +2419,23 @@ function buildRecipe(options = {}) {
   }
 }
 
-generateBtn.addEventListener("click", () => {
-  replayClass(generateBtn, "btn-pulse");
-  buildRecipe({ animateCup: true });
-});
+function setManualOverridesExpanded(expanded) {
+  if (manualOverridesPanelEl) {
+    manualOverridesPanelEl.classList.toggle("is-collapsed", !expanded);
+  }
+
+  if (manualToggleBtn) {
+    manualToggleBtn.setAttribute("aria-expanded", String(expanded));
+    manualToggleBtn.textContent = expanded ? "Sembunyikan kustom manual" : "Tampilkan kustom manual";
+  }
+}
+
+if (generateBtn) {
+  generateBtn.addEventListener("click", () => {
+    replayClass(generateBtn, "btn-pulse");
+    buildRecipe({ animateCup: true });
+  });
+}
 document.getElementById("coffeeType").addEventListener("change", event => {
   toggleBlendControls(event.target.value);
   toggleCustomControls(event.target.value);
@@ -2308,6 +2453,10 @@ blendArabicaEl.addEventListener("input", () => {
   buildRecipe();
 });
 document.getElementById("customCoffee").addEventListener("input", buildRecipe);
+document.getElementById("recipeName").addEventListener("input", buildRecipe);
+manualDoseEl?.addEventListener("input", buildRecipe);
+manualWaterEl?.addEventListener("input", buildRecipe);
+manualWaterTempEl?.addEventListener("input", buildRecipe);
 document.getElementById("brewTool").addEventListener("change", event => {
   renderToolFields(event.target.value);
   buildRecipe();
@@ -2323,6 +2472,14 @@ if (runTuningEl) {
 if (tasteIssueEl) {
   tasteIssueEl.addEventListener("change", () => {
     renderTuningAssistant(tasteIssueEl.value);
+  });
+}
+
+if (manualToggleBtn) {
+  setManualOverridesExpanded(false);
+  manualToggleBtn.addEventListener("click", () => {
+    const isExpanded = manualOverridesPanelEl ? !manualOverridesPanelEl.classList.contains("is-collapsed") : false;
+    setManualOverridesExpanded(!isExpanded);
   });
 }
 

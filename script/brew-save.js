@@ -47,6 +47,13 @@ function getToolFieldSnapshot() {
   return fields;
 }
 
+function getRecipeMetadataFromDom() {
+  return {
+    recipeName: document.getElementById("recipeName")?.value?.trim() || "",
+    notes: document.getElementById("recipeNote")?.value?.trim() || ""
+  };
+}
+
 function getStepsFromRecipeDom() {
   const recipeEl = document.getElementById("recipe");
   if (!recipeEl) {
@@ -69,6 +76,7 @@ function getStepsFromRecipeDom() {
 function buildFallbackSnapshot() {
   const coffeeTypeEl = document.getElementById("coffeeType");
   const brewToolEl = document.getElementById("brewTool");
+  const recipeMetadata = getRecipeMetadataFromDom();
 
   if (!coffeeTypeEl || !brewToolEl) {
     return null;
@@ -77,17 +85,19 @@ function buildFallbackSnapshot() {
   const steps = getStepsFromRecipeDom();
 
   return {
-    title: `${getSelectedLabel("coffeeType")} - ${getSelectedLabel("brewTool")}`,
+    title: recipeMetadata.recipeName || `${getSelectedLabel("coffeeType")} - ${getSelectedLabel("brewTool")}`,
     coffeeType: coffeeTypeEl.value || "",
     coffeeLabel: getSelectedLabel("coffeeType"),
     brewTool: brewToolEl.value || "",
     brewToolLabel: getSelectedLabel("brewTool"),
+    recipeName: recipeMetadata.recipeName,
     settings: {
       ...getToolFieldSnapshot(),
       customCoffee: document.getElementById("customCoffee")?.value?.trim() || ""
     },
     steps,
     flavorNarrative: steps.length > 0 ? steps[steps.length - 1].desc : "",
+    notes: recipeMetadata.notes,
     sourcePage: "index"
   };
 }
@@ -117,9 +127,11 @@ function normalizeRecipeSnapshot(snapshot) {
     coffeeLabel: String(snapshot.coffeeLabel || ""),
     brewTool: String(snapshot.brewTool || ""),
     brewToolLabel: String(snapshot.brewToolLabel || ""),
+    recipeName: String(snapshot.recipeName || ""),
     settings: typeof snapshot.settings === "object" && snapshot.settings !== null ? snapshot.settings : {},
     steps,
     flavorNarrative: String(snapshot.flavorNarrative || ""),
+    notes: String(snapshot.notes || ""),
     sourcePage: String(snapshot.sourcePage || "index")
   };
 }
@@ -130,16 +142,20 @@ function updateSaveButtonState() {
   }
 
   if (!firebaseReady) {
+    saveBtnEl.hidden = true;
     saveBtnEl.disabled = true;
     setSaveStatus("Firebase belum aktif. Isi firebase-config.js dulu.", "warning");
     return;
   }
 
   if (!currentUser) {
+    saveBtnEl.hidden = true;
     saveBtnEl.disabled = false;
     setSaveStatus("Login dulu supaya resep bisa disimpan ke akun kamu.", "warning");
     return;
   }
+
+  saveBtnEl.hidden = false;
 
   const snapshot = normalizeRecipeSnapshot(latestRecipeSnapshot) || normalizeRecipeSnapshot(buildFallbackSnapshot());
   if (!snapshot) {
@@ -172,18 +188,24 @@ async function saveCurrentRecipe() {
     return;
   }
 
+  const recipeMetadata = getRecipeMetadataFromDom();
+  const recipeTitle = recipeMetadata.recipeName || snapshot.title;
+  const recipeNotes = recipeMetadata.notes || snapshot.notes || "";
+
   saveBtnEl.disabled = true;
   setSaveStatus("Menyimpan resep ke dashboard...", "info");
 
   try {
     await addDoc(collection(db, "users", currentUser.uid, "recipes"), {
       ...snapshot,
-      notes: "",
+      title: recipeTitle,
+      notes: recipeNotes,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
 
     setSaveStatus("Resep berhasil disimpan ke dashboard.", "success");
+    window.alert(`Resep "${recipeTitle}" sudah disimpan ke dashboard.`);
   } catch (error) {
     setSaveStatus(error.message || "Gagal menyimpan resep.", "error");
   } finally {
