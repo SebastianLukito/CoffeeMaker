@@ -1659,17 +1659,16 @@ footer {
 
   .header-actions.has-mobile-menu .mobile-header-toggle {
     display: inline-flex;
-    grid-column: 1;
-    justify-self: start;
+    justify-content: center;
   }
 
   .header-actions.has-mobile-menu {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
     align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
     width: min(100%, 560px);
-    column-gap: 10px;
-    row-gap: 8px;
+    gap: 8px;
     padding: 4px;
     border-radius: 16px;
     background: rgba(255, 255, 255, 0.28);
@@ -1683,15 +1682,12 @@ footer {
 
   .header-actions.has-mobile-menu #authTrigger,
   .header-actions.has-mobile-menu #logoutBtn {
-    grid-column: 3;
-    justify-self: end;
     margin-left: 0;
   }
 
   .header-actions.has-mobile-menu.is-mobile-open > :not(#authTrigger):not(#logoutBtn):not(.mobile-header-toggle) {
     display: inline-flex;
-    grid-column: 1 / -1;
-    justify-self: stretch;
+    width: 100%;
     justify-content: flex-start;
     min-height: 40px;
     padding: 8px 12px;
@@ -1703,8 +1699,12 @@ footer {
 
 @media (max-width: 620px) {
   header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
     padding-left: 5vw;
     padding-right: 5vw;
+    gap: 10px;
   }
 
   .logo-mark {
@@ -1713,21 +1713,37 @@ footer {
     flex-basis: 32px;
   }
 
+  .logo {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 8px;
+  }
+
   .logo-title {
-    max-width: 20ch;
-    font-size: clamp(0.82rem, 2.2vw + 0.46rem, 1.05rem);
+    max-width: 18ch;
+    font-size: clamp(0.72rem, 1.7vw + 0.42rem, 0.9rem);
+    line-height: 1.2;
   }
 
   .header-actions {
+    width: auto;
+    margin-left: auto;
+    flex: 0 0 auto;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
     gap: 8px;
-    padding-bottom: 8px;
+    padding: 0;
   }
 
   .header-actions.has-mobile-menu {
-    width: 100%;
+    width: auto;
+    max-width: none;
     border-radius: 14px;
-    padding: 3px;
-    row-gap: 7px;
+    padding: 0;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    backdrop-filter: none;
   }
 
   .header-actions .pill-link,
@@ -1738,7 +1754,7 @@ footer {
   }
 
   .header-actions.has-mobile-menu.is-mobile-open > :not(#authTrigger):not(#logoutBtn):not(.mobile-header-toggle) {
-    width: 100%;
+    width: min(86vw, 320px);
   }
 
   .flavor-visual-grid,
