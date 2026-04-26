@@ -49,15 +49,59 @@
     ],
     processMethod: [
       { value: "washed", label: "Washed" },
-      { value: "natural", label: "Natural" },
-      { value: "honeyRed", label: "Honey Red" },
-      { value: "anaerobicNatural", label: "Anaerobic Natural" }
+      { value: "fullWashed", label: "Full Washed" },
+      { value: "natural", label: "Natural / Dry" },
+      { value: "honeyYellow", label: "Honey - Yellow" },
+      { value: "honeyRed", label: "Honey - Red" },
+      { value: "honeyBlack", label: "Honey - Black" },
+      { value: "pulpedNatural", label: "Pulped Natural" },
+      { value: "semiWashed", label: "Semi Washed" },
+      { value: "wetHulled", label: "Wet Hulled / Giling Basah" },
+      { value: "anaerobicNatural", label: "Anaerobic Natural" },
+      { value: "anaerobicWashed", label: "Anaerobic Washed" },
+      { value: "carbonicMaceration", label: "Carbonic Maceration" },
+      { value: "wineProcess", label: "Wine Process" },
+      { value: "lacticFermentation", label: "Lactic Fermentation" },
+      { value: "yeastInoculated", label: "Yeast Inoculated" },
+      { value: "extendedFermentation", label: "Extended Fermentation" },
+      { value: "doubleFermentation", label: "Double Fermentation" },
+      { value: "thermalShock", label: "Thermal Shock" },
+      { value: "monsooned", label: "Monsooned" },
+      { value: "coferment", label: "Co-ferment (Eksperimental)" }
     ],
     varietal: [
       { value: "typica", label: "Typica" },
       { value: "bourbon", label: "Bourbon" },
-      { value: "geisha", label: "Geisha" },
-      { value: "catimor", label: "Catimor" }
+      { value: "caturra", label: "Caturra" },
+      { value: "catuai", label: "Catuai" },
+      { value: "mundoNovo", label: "Mundo Novo" },
+      { value: "catimor", label: "Catimor" },
+      { value: "sarchimor", label: "Sarchimor" },
+      { value: "castillo", label: "Castillo" },
+      { value: "colombia", label: "Colombia" },
+      { value: "geisha", label: "Geisha / Gesha" },
+      { value: "sl28", label: "SL28" },
+      { value: "sl34", label: "SL34" },
+      { value: "pacamara", label: "Pacamara" },
+      { value: "maragogype", label: "Maragogype" },
+      { value: "pacas", label: "Pacas" },
+      { value: "java", label: "Java" },
+      { value: "ethiopianHeirloom", label: "Ethiopian Heirloom" },
+      { value: "sidra", label: "Sidra" },
+      { value: "wushWush", label: "Wush Wush" },
+      { value: "rudolph", label: "Rudolph" },
+      { value: "ruiru11", label: "Ruiru 11" },
+      { value: "batian", label: "Batian" },
+      { value: "timorHybrid", label: "Timor Hybrid" },
+      { value: "s795", label: "S795" },
+      { value: "s288", label: "S288" },
+      { value: "pache", label: "Pache" },
+      { value: "villaSarchi", label: "Villa Sarchi" },
+      { value: "obata", label: "Obata" },
+      { value: "garnica", label: "Garnica" },
+      { value: "moka", label: "Moka" },
+      { value: "libTek", label: "Liberica Tekisik/Local" },
+      { value: "robustaClonal", label: "Robusta Clonal" }
     ],
     grind: [
       { value: "coarse", label: "Coarse" },
@@ -78,7 +122,9 @@
       { value: "88", label: "88°C" },
       { value: "90", label: "90°C" },
       { value: "92", label: "92°C" },
-      { value: "94", label: "94°C" }
+      { value: "93", label: "93°C" },
+      { value: "94", label: "94°C" },
+      { value: "96", label: "96°C" }
     ],
     waterHardness: [
       { value: "soft", label: "Soft" },
@@ -95,6 +141,28 @@
       { value: "3:00", label: "3:00" },
       { value: "3:30", label: "3:30" },
       { value: "4:00", label: "4:00" }
+    ],
+    beanDensity: [
+      { value: "low", label: "Rendah" },
+      { value: "medium", label: "Sedang" },
+      { value: "high", label: "Tinggi" }
+    ],
+    restDays: [
+      { value: "3", label: "3 hari" },
+      { value: "7", label: "7 hari" },
+      { value: "14", label: "14 hari" },
+      { value: "21", label: "21 hari" },
+      { value: "30", label: "30 hari" }
+    ],
+    waterAlkalinity: [
+      { value: "low", label: "Rendah" },
+      { value: "balanced", label: "Seimbang" },
+      { value: "high", label: "Tinggi" }
+    ],
+    turbulence: [
+      { value: "low", label: "Rendah" },
+      { value: "medium", label: "Sedang" },
+      { value: "high", label: "Tinggi" }
     ]
   };
 
@@ -105,6 +173,10 @@
     { key: "varietal", label: "Varietas kopi", type: "select", options: optionSets.varietal, defaultValue: "typica" },
     { key: "grind", label: "Jenis gilingan", type: "select", options: optionSets.grind, defaultValue: "medium" },
     { key: "roastLevel", label: "Roast level", type: "select", options: optionSets.roastLevel, defaultValue: "medium" },
+    { key: "beanDensity", label: "Densitas biji", type: "select", options: optionSets.beanDensity, defaultValue: "medium" },
+    { key: "restDays", label: "Masa resting roast", type: "select", options: optionSets.restDays, defaultValue: "14" },
+    { key: "waterAlkalinity", label: "Alkalinitas air", type: "select", options: optionSets.waterAlkalinity, defaultValue: "balanced" },
+    { key: "turbulence", label: "Turbulensi aliran", type: "select", options: optionSets.turbulence, defaultValue: "medium" },
     { key: "dose", label: "Gramasi kopi (gram)", type: "number", min: 10, max: 40, step: 1, defaultValue: "20" },
     { key: "ratio", label: "Rasio kopi:air (1:x)", type: "select", options: optionSets.ratio, defaultValue: "14" },
     { key: "waterTemp", label: "Suhu air", type: "select", options: optionSets.waterTemp, defaultValue: "92" },
@@ -137,16 +209,61 @@
 
   const processFlavorBias = {
     washed: { acidity: 0.7, body: -0.2, sweetness: 0.1, bitterness: -0.2, aroma: 0.4 },
+    fullWashed: { acidity: 0.9, body: -0.3, sweetness: 0.1, bitterness: -0.3, aroma: 0.6 },
     natural: { acidity: 0.1, body: 0.8, sweetness: 0.9, bitterness: 0.2, aroma: 0.9 },
+    honeyYellow: { acidity: 0.2, body: 0.5, sweetness: 0.8, bitterness: 0.1, aroma: 0.6 },
     honeyRed: { acidity: 0.1, body: 0.7, sweetness: 1, bitterness: 0.2, aroma: 0.7 },
+    honeyBlack: { acidity: -0.2, body: 1, sweetness: 1.1, bitterness: 0.5, aroma: 0.8 },
+    pulpedNatural: { acidity: 0.2, body: 0.5, sweetness: 0.7, bitterness: 0.1, aroma: 0.5 },
+    semiWashed: { acidity: -0.3, body: 0.8, sweetness: 0.3, bitterness: 0.4, aroma: 0.3 },
+    wetHulled: { acidity: -0.8, body: 1.3, sweetness: 0.1, bitterness: 0.7, aroma: 0.2 },
     anaerobicNatural: { acidity: 0.2, body: 0.7, sweetness: 1.1, bitterness: 0.3, aroma: 1.3 }
+    ,
+    anaerobicWashed: { acidity: 0.4, body: 0.5, sweetness: 0.8, bitterness: 0.2, aroma: 1.2 },
+    carbonicMaceration: { acidity: 0.8, body: 0.3, sweetness: 0.8, bitterness: -0.1, aroma: 1.4 },
+    wineProcess: { acidity: 0.4, body: 0.8, sweetness: 1, bitterness: 0.2, aroma: 1.3 },
+    lacticFermentation: { acidity: -0.1, body: 0.5, sweetness: 0.9, bitterness: -0.1, aroma: 1 },
+    yeastInoculated: { acidity: 0.5, body: 0.3, sweetness: 0.8, bitterness: -0.1, aroma: 1.3 },
+    extendedFermentation: { acidity: -0.1, body: 0.8, sweetness: 0.9, bitterness: 0.5, aroma: 1.1 },
+    doubleFermentation: { acidity: 0.2, body: 0.7, sweetness: 1, bitterness: 0.4, aroma: 1.2 },
+    thermalShock: { acidity: 0.7, body: 0.1, sweetness: 0.7, bitterness: -0.2, aroma: 1.1 },
+    monsooned: { acidity: -1.4, body: 1.5, sweetness: 0, bitterness: 0.8, aroma: 0.1 },
+    coferment: { acidity: 0.4, body: 0.6, sweetness: 1.2, bitterness: 0.2, aroma: 1.5 }
   };
 
   const varietalFlavorBias = {
     typica: { acidity: 0.5, body: -0.1, sweetness: 0.6, bitterness: -0.2, aroma: 0.7 },
     bourbon: { acidity: 0.3, body: 0.2, sweetness: 0.8, bitterness: -0.1, aroma: 0.6 },
+    caturra: { acidity: 0.3, body: 0, sweetness: 0.4, bitterness: 0, aroma: 0.4 },
+    catuai: { acidity: 0.1, body: 0.2, sweetness: 0.5, bitterness: 0.1, aroma: 0.3 },
+    mundoNovo: { acidity: -0.1, body: 0.6, sweetness: 0.4, bitterness: 0.2, aroma: 0.2 },
+    catimor: { acidity: -0.3, body: 0.6, sweetness: 0.2, bitterness: 0.5, aroma: 0.1 },
+    sarchimor: { acidity: -0.1, body: 0.5, sweetness: 0.3, bitterness: 0.4, aroma: 0.2 },
+    castillo: { acidity: 0.1, body: 0.2, sweetness: 0.4, bitterness: 0.1, aroma: 0.3 },
+    colombia: { acidity: 0.2, body: 0.2, sweetness: 0.5, bitterness: 0, aroma: 0.3 },
     geisha: { acidity: 0.9, body: -0.4, sweetness: 0.6, bitterness: -0.4, aroma: 1.6 },
-    catimor: { acidity: -0.3, body: 0.6, sweetness: 0.2, bitterness: 0.5, aroma: 0.1 }
+    sl28: { acidity: 0.9, body: -0.1, sweetness: 0.5, bitterness: -0.2, aroma: 0.9 },
+    sl34: { acidity: 0.5, body: 0.2, sweetness: 0.6, bitterness: -0.1, aroma: 0.8 },
+    pacamara: { acidity: 0.5, body: 0.6, sweetness: 0.8, bitterness: 0.1, aroma: 1 },
+    maragogype: { acidity: 0.3, body: -0.2, sweetness: 0.4, bitterness: -0.1, aroma: 0.5 },
+    pacas: { acidity: 0.3, body: 0.1, sweetness: 0.5, bitterness: 0, aroma: 0.4 },
+    java: { acidity: 0.4, body: 0, sweetness: 0.4, bitterness: -0.1, aroma: 0.6 },
+    ethiopianHeirloom: { acidity: 0.8, body: -0.2, sweetness: 0.6, bitterness: -0.2, aroma: 1.2 },
+    sidra: { acidity: 0.6, body: 0.1, sweetness: 0.8, bitterness: -0.1, aroma: 1.2 },
+    wushWush: { acidity: 0.7, body: 0.1, sweetness: 0.7, bitterness: -0.1, aroma: 1.1 },
+    rudolph: { acidity: 0.7, body: 0.2, sweetness: 0.8, bitterness: 0, aroma: 0.9 },
+    ruiru11: { acidity: 0.1, body: 0.3, sweetness: 0.4, bitterness: 0.2, aroma: 0.3 },
+    batian: { acidity: 0.4, body: 0.1, sweetness: 0.5, bitterness: 0, aroma: 0.6 },
+    timorHybrid: { acidity: -0.4, body: 0.8, sweetness: 0.2, bitterness: 0.5, aroma: 0.1 },
+    s795: { acidity: -0.1, body: 0.6, sweetness: 0.2, bitterness: 0.5, aroma: 0.3 },
+    s288: { acidity: -0.2, body: 0.5, sweetness: 0.4, bitterness: 0.3, aroma: 0.4 },
+    pache: { acidity: 0.3, body: 0.1, sweetness: 0.5, bitterness: 0, aroma: 0.5 },
+    villaSarchi: { acidity: 0.2, body: 0, sweetness: 0.5, bitterness: 0, aroma: 0.5 },
+    obata: { acidity: 0, body: 0.3, sweetness: 0.3, bitterness: 0.2, aroma: 0.2 },
+    garnica: { acidity: 0.1, body: 0.2, sweetness: 0.4, bitterness: 0.1, aroma: 0.3 },
+    moka: { acidity: 0.5, body: -0.1, sweetness: 0.5, bitterness: -0.1, aroma: 0.8 },
+    libTek: { acidity: -0.2, body: 1.1, sweetness: 0.4, bitterness: 0.4, aroma: 0.9 },
+    robustaClonal: { acidity: -1, body: 1.6, sweetness: -0.2, bitterness: 1.7, aroma: 0.4 }
   };
 
   const roastFlavorBias = {
@@ -167,7 +284,30 @@
     high: { acidity: -0.3, body: 0.7, sweetness: -0.1, bitterness: 0.8, aroma: -0.1 }
   };
 
+  const beanDensityFlavorBias = {
+    low: { acidity: 0.2, body: -0.2, sweetness: 0.1, bitterness: -0.1, aroma: 0.2 },
+    medium: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+    high: { acidity: -0.2, body: 0.3, sweetness: 0.1, bitterness: 0.2, aroma: -0.1 }
+  };
+
+  const alkalinityFlavorBias = {
+    low: { acidity: 0.5, body: -0.2, sweetness: 0.1, bitterness: -0.2, aroma: 0.2 },
+    balanced: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+    high: { acidity: -0.6, body: 0.2, sweetness: 0.1, bitterness: 0.2, aroma: -0.1 }
+  };
+
+  const turbulenceFlavorBias = {
+    low: { acidity: 0.1, body: -0.1, sweetness: 0.2, bitterness: -0.2, aroma: 0 },
+    medium: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+    high: { acidity: -0.2, body: 0.3, sweetness: -0.1, bitterness: 0.4, aroma: -0.1 }
+  };
+
   const state = {
+    A: null,
+    B: null
+  };
+
+  const extractionState = {
     A: null,
     B: null
   };
@@ -254,6 +394,80 @@
     return next;
   }
 
+  function clampNumber(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
+  function resolveGrindExtractionFactor(grindValue) {
+    const grindMap = {
+      coarse: -0.9,
+      medium: 0,
+      fine: 0.9,
+      "medium-fine": 0.45
+    };
+
+    return grindMap[grindValue] || 0;
+  }
+
+  function computeExtractionEstimate(values) {
+    const brewTool = values.brewTool;
+    const ratio = Number(values.ratio);
+    const targetTimeSeconds = parseClockToSeconds(values.targetTime);
+    const temp = Number(values.waterTemp);
+    const dose = Number(values.dose);
+    const restDays = Number(values.restDays);
+    const timeMinutes = Number.isFinite(targetTimeSeconds) ? targetTimeSeconds / 60 : 3;
+
+    const ratioDelta = Number.isFinite(ratio) ? 14 - ratio : 0;
+    const densityFactor = values.beanDensity === "high" ? -0.35 : values.beanDensity === "low" ? 0.2 : 0;
+    const alkalinityFactor = values.waterAlkalinity === "high" ? -0.2 : values.waterAlkalinity === "low" ? 0.15 : 0;
+    const turbulenceFactor = values.turbulence === "high" ? 0.35 : values.turbulence === "low" ? -0.2 : 0;
+    const restFactor = Number.isFinite(restDays)
+      ? restDays < 5
+        ? -0.8
+        : restDays > 28
+          ? -0.2
+          : 0.3
+      : 0;
+
+    const toolFactor = {
+      v60: 0,
+      kalita: 0.15,
+      chemex: -0.2,
+      aeropress: 0.3,
+      frenchpress: 0.2,
+      syphon: 0.25,
+      espresso: 0.7,
+      mokapot: 0.45,
+      coldBrew: -0.3,
+      coldDrip: -0.1
+    }[brewTool] || 0;
+
+    const eyBase = 19
+      + ratioDelta * 0.26
+      + (Number.isFinite(temp) ? (temp - 92) * 0.08 : 0)
+      + (timeMinutes - 3) * 0.32
+      + resolveGrindExtractionFactor(values.grind)
+      + (values.agitation ? (values.agitation === "high" ? 0.4 : values.agitation === "gentle" ? -0.25 : 0) : 0)
+      + densityFactor
+      + alkalinityFactor
+      + turbulenceFactor
+      + restFactor
+      + toolFactor;
+
+    const eyPercent = clampNumber(eyBase, 14, 24);
+    const tdsPercent = clampNumber(1.35 * (Number.isFinite(ratio) ? 14 / ratio : 1) + (Number.isFinite(dose) ? (dose - 20) * 0.01 : 0), 0.8, 2.6);
+    const eyPenalty = eyPercent < 18 ? (18 - eyPercent) * 7 : eyPercent > 22 ? (eyPercent - 22) * 6 : 0;
+    const tdsPenalty = Math.abs(tdsPercent - 1.35) * 14;
+    const extractionIndex = clampNumber(Math.round(100 - eyPenalty - tdsPenalty), 38, 99);
+
+    return {
+      extractionIndex,
+      eyPercent: Number(eyPercent.toFixed(1)),
+      tdsPercent: Number(tdsPercent.toFixed(2))
+    };
+  }
+
   function readSideValues(side) {
     const values = {};
     fieldSchema.forEach(field => {
@@ -273,6 +487,9 @@
     applyFlavorBias(profile, roastFlavorBias[values.roastLevel]);
     applyFlavorBias(profile, mineralFlavorBias[values.waterHardness]);
     applyFlavorBias(profile, agitationFlavorBias[values.agitation]);
+    applyFlavorBias(profile, beanDensityFlavorBias[values.beanDensity]);
+    applyFlavorBias(profile, alkalinityFlavorBias[values.waterAlkalinity]);
+    applyFlavorBias(profile, turbulenceFlavorBias[values.turbulence]);
 
     const ratio = Number(values.ratio);
     if (Number.isFinite(ratio)) {
@@ -307,6 +524,19 @@
     profile.acidity -= minuteDelta * 0.14;
     profile.sweetness += minuteDelta * 0.08;
     profile.bitterness += minuteDelta * 0.2;
+
+    const extraction = computeExtractionEstimate(values);
+    if (extraction.eyPercent < 18) {
+      const under = 18 - extraction.eyPercent;
+      profile.acidity += under * 0.22;
+      profile.sweetness -= under * 0.12;
+      profile.body -= under * 0.08;
+    } else if (extraction.eyPercent > 22) {
+      const over = extraction.eyPercent - 22;
+      profile.bitterness += over * 0.24;
+      profile.aroma -= over * 0.1;
+      profile.sweetness -= over * 0.1;
+    }
 
     return clampProfile(profile);
   }
@@ -431,8 +661,10 @@
   function renderComparisonSummary() {
     const profileA = state.A;
     const profileB = state.B;
+    const extractionA = extractionState.A;
+    const extractionB = extractionState.B;
 
-    if (!profileA || !profileB) {
+    if (!profileA || !profileB || !extractionA || !extractionB) {
       return;
     }
 
@@ -451,7 +683,22 @@
       })
       .join("");
 
-    compareSummaryGridEl.innerHTML = cards;
+    const extractionDelta = extractionB.extractionIndex - extractionA.extractionIndex;
+    const eyDelta = Number((extractionB.eyPercent - extractionA.eyPercent).toFixed(1));
+    const extractionCards = `
+      <div class="compare-delta-card" data-trend="${extractionDelta > 0 ? "positive" : extractionDelta < 0 ? "negative" : "neutral"}">
+        <span>Extraction Index</span>
+        <strong>${extractionDelta > 0 ? "+" : ""}${extractionDelta}</strong>
+        <small>B: ${extractionB.extractionIndex} vs A: ${extractionA.extractionIndex}</small>
+      </div>
+      <div class="compare-delta-card" data-trend="${eyDelta > 0 ? "positive" : eyDelta < 0 ? "negative" : "neutral"}">
+        <span>Estimasi Extraction Yield</span>
+        <strong>${eyDelta > 0 ? "+" : ""}${eyDelta.toFixed(1)}%</strong>
+        <small>B: ${extractionB.eyPercent}% vs A: ${extractionA.eyPercent}%</small>
+      </div>
+    `;
+
+    compareSummaryGridEl.innerHTML = cards + extractionCards;
 
     if (!compareSummaryNoteEl) {
       return;
@@ -461,19 +708,21 @@
       .map(metric => ({ key: metric.key, label: metric.label, delta: Number((profileB[metric.key] - profileA[metric.key]).toFixed(1)) }))
       .sort((left, right) => Math.abs(right.delta) - Math.abs(left.delta))[0];
 
-    if (Math.abs(dominantMetric.delta) < 0.15) {
-      compareSummaryNoteEl.textContent = "Dua setup masih sangat mirip. Coba ubah rasio, suhu, atau waktu untuk melihat perbedaan lebih jelas.";
+    if (Math.abs(dominantMetric.delta) < 0.15 && Math.abs(extractionDelta) < 2) {
+      compareSummaryNoteEl.textContent = "Dua setup masih sangat mirip. Coba ubah rasio, suhu, waktu, atau variabel teknis ekstraksi untuk melihat perbedaan lebih jelas.";
       return;
     }
 
     const direction = dominantMetric.delta > 0 ? "lebih tinggi" : "lebih rendah";
-    compareSummaryNoteEl.textContent = `Perbedaan paling besar ada di ${dominantMetric.label}: Setup B ${Math.abs(dominantMetric.delta).toFixed(1)} poin ${direction} dari Setup A.`;
+    compareSummaryNoteEl.textContent = `Perbedaan terbesar pada ${dominantMetric.label} (${Math.abs(dominantMetric.delta).toFixed(1)} poin ${direction}) dengan selisih Extraction Index ${extractionDelta > 0 ? "+" : ""}${extractionDelta}.`;
   }
 
   function renderSide(side) {
     const values = readSideValues(side);
     const profile = computeFlavorProfile(values);
+    const extraction = computeExtractionEstimate(values);
     state[side] = profile;
+    extractionState[side] = extraction;
 
     drawFlavorRadar(side, profile);
     renderMetricGrid(side, profile);

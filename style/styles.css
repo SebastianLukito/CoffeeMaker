@@ -152,6 +152,7 @@ header {
 
 .hero-card {
   grid-area: card;
+  overflow: visible;
 }
 
 .hero-intro h1 {
@@ -331,6 +332,10 @@ header {
   box-shadow: 0 24px 64px rgba(34, 27, 22, 0.22);
 }
 
+.hero-card {
+  overflow: visible;
+}
+
 .grid {
   display: grid;
   gap: 16px;
@@ -342,6 +347,8 @@ header {
 
 .base-grid {
   margin-bottom: 12px;
+  position: relative;
+  z-index: 4;
 }
 
 .setup-hint {
@@ -352,6 +359,8 @@ header {
   color: var(--muted);
   background: rgba(255, 255, 255, 0.62);
   font-size: 0.95rem;
+  position: relative;
+  z-index: 1;
 }
 
 .setup-hint.is-hidden {
@@ -369,6 +378,30 @@ header {
 
 .advanced-grid {
   margin-bottom: 8px;
+}
+
+#toolFields {
+  position: relative;
+  isolation: isolate;
+}
+
+#toolFields > .tool-field,
+.base-grid > div,
+.advanced-grid > .custom-controls,
+.advanced-grid > .blend-controls {
+  position: relative;
+  z-index: 1;
+}
+
+#toolFields > .tool-field:hover,
+#toolFields > .tool-field:focus-within,
+.base-grid > div:hover,
+.base-grid > div:focus-within,
+.advanced-grid > .custom-controls:hover,
+.advanced-grid > .custom-controls:focus-within,
+.advanced-grid > .blend-controls:hover,
+.advanced-grid > .blend-controls:focus-within {
+  z-index: 45;
 }
 
 .action-row {
@@ -675,6 +708,69 @@ label {
   font-size: 0.9rem;
   margin-bottom: 6px;
   color: var(--muted);
+}
+
+.hover-help {
+  position: relative;
+  cursor: help;
+  text-decoration-line: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: rgba(74, 127, 107, 0.6);
+  text-underline-offset: 3px;
+}
+
+@media (hover: hover) {
+  .hover-help:hover::after,
+  .hover-help:focus-visible::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    left: 0;
+    top: calc(100% + 8px);
+    width: min(330px, 86vw);
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(74, 127, 107, 0.36);
+    background: rgba(255, 252, 247, 0.98);
+    box-shadow: 0 10px 24px rgba(34, 27, 22, 0.2);
+    color: #2a2019;
+    font-size: 0.78rem;
+    font-weight: 500;
+    line-height: 1.42;
+    letter-spacing: 0;
+    white-space: pre-line;
+    z-index: 120;
+  }
+
+  .hover-help:hover::before,
+  .hover-help:focus-visible::before {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: calc(100% + 2px);
+    width: 10px;
+    height: 10px;
+    border-left: 1px solid rgba(74, 127, 107, 0.36);
+    border-top: 1px solid rgba(74, 127, 107, 0.36);
+    background: rgba(255, 252, 247, 0.98);
+    transform: rotate(45deg);
+    z-index: 121;
+  }
+
+  .base-grid > div:nth-child(2) .hover-help:hover::after,
+  .base-grid > div:nth-child(2) .hover-help:focus-visible::after,
+  #toolFields > .tool-field:nth-child(even) .hover-help:hover::after,
+  #toolFields > .tool-field:nth-child(even) .hover-help:focus-visible::after {
+    left: auto;
+    right: 0;
+  }
+
+  .base-grid > div:nth-child(2) .hover-help:hover::before,
+  .base-grid > div:nth-child(2) .hover-help:focus-visible::before,
+  #toolFields > .tool-field:nth-child(even) .hover-help:hover::before,
+  #toolFields > .tool-field:nth-child(even) .hover-help:focus-visible::before {
+    left: auto;
+    right: 14px;
+  }
 }
 
 select, input {

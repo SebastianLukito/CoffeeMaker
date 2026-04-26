@@ -45,7 +45,79 @@ const stats = {
   steepTime: { row: document.querySelector('[data-stat="steepTime"]'), value: document.getElementById("steepTimeProfile") },
   drawdownTime: { row: document.querySelector('[data-stat="drawdownTime"]'), value: document.getElementById("drawdownTimeProfile") },
   dripRate: { row: document.querySelector('[data-stat="dripRate"]'), value: document.getElementById("dripRateProfile") },
-  dripTime: { row: document.querySelector('[data-stat="dripTime"]'), value: document.getElementById("dripTimeProfile") }
+  dripTime: { row: document.querySelector('[data-stat="dripTime"]'), value: document.getElementById("dripTimeProfile") },
+  extractionIndex: { row: document.querySelector('[data-stat="extractionIndex"]'), value: document.getElementById("extractionIndexProfile") },
+  ey: { row: document.querySelector('[data-stat="ey"]'), value: document.getElementById("eyProfile") },
+  tds: { row: document.querySelector('[data-stat="tds"]'), value: document.getElementById("tdsProfile") },
+  extractionStatus: { row: document.querySelector('[data-stat="extractionStatus"]'), value: document.getElementById("extractionStatusProfile") }
+};
+
+const extractionGuidanceText = [
+  "Optimal (Golden Cup): TDS 1,15-1,35%, EY 18-22%.",
+  "Under-extracted: EY < 18% (rasa asam/tipis).",
+  "Over-extracted: EY > 22% (rasa pahit/sepat).",
+  "Espresso: TDS 8-12%, EY 18-22%."
+].join("\n");
+
+const hoverHelpByFieldId = {
+  coffeeType: "Pilih jenis kopi untuk menentukan karakter rasa dasar dan bias flavor awal.",
+  brewTool: "Setiap alat seduh punya target ekstraksi berbeda, jadi langkah dan rekomendasi akan menyesuaikan.",
+  processMethod: "Metode proses pasca panen memengaruhi acidity, sweetness, body, dan aroma akhir.",
+  varietal: "Varietas menentukan kecenderungan rasa bawaan seperti floral, fruity, spicy, atau nutty.",
+  beanDensity: "Densitas tinggi cenderung butuh energi ekstraksi lebih besar; densitas rendah cenderung lebih mudah terekstrak.",
+  restDays: "Masa resting roast memengaruhi stabilitas degassing dan konsistensi ekstraksi.",
+  waterAlkalinity: "Alkalinitas air memengaruhi buffer keasaman dan persepsi clarity rasa.",
+  turbulence: "Turbulensi aliran memengaruhi seberapa cepat dan merata pelarutan senyawa kopi.",
+  grind: "Semakin halus gilingan, laju ekstraksi biasanya makin cepat; terlalu halus bisa meningkatkan pahit.",
+  roastLevel: "Roast level mengubah kelarutan: light umumnya butuh energi lebih, dark lebih cepat terekstrak.",
+  dose: "Jumlah kopi memengaruhi strength dan body; dosis lebih tinggi biasanya menghasilkan minuman lebih pekat.",
+  ratio: "Rasio kopi-air menentukan kekuatan seduhan. Angka lebih kecil biasanya lebih pekat.",
+  waterTemp: "Suhu lebih tinggi mempercepat ekstraksi; terlalu tinggi bisa memicu rasa pahit/sepat.",
+  waterHardness: "Mineral air memengaruhi keseimbangan clarity, sweetness, dan body pada cangkir akhir.",
+  agitation: "Agitasi membantu pemerataan ekstraksi, tetapi berlebihan bisa menaikkan bitterness.",
+  targetTime: "Target waktu seduh membantu menjaga konsistensi extraction yield antar brew.",
+  brewRatio: "Untuk espresso, rasio brew adalah gram kopi : gram hasil ekstraksi (yield).",
+  shotTime: "Shot time terlalu singkat cenderung under, terlalu lama cenderung over extraction.",
+  pressure: "Tekanan espresso memengaruhi laju aliran dan efisiensi ekstraksi pada puck.",
+  steepTime: "Waktu perendaman menentukan kedalaman ekstraksi pada metode immersion.",
+  pressTime: "Durasi press pada Aeropress memengaruhi body dan clarity hasil akhir.",
+  brewTime: "Waktu brew Syphon memengaruhi keseimbangan acidity, body, dan aroma.",
+  drawdownTime: "Waktu drawdown memberi sinyal resistensi bed kopi dan konsistensi grind.",
+  steepTimeCold: "Cold brew memakai perendaman panjang untuk ekstraksi halus dengan acidity rendah.",
+  icePercent: "Persentase pengenceran saat serving mengatur kekuatan akhir minuman dingin.",
+  dripRate: "Laju tetes cold drip menentukan kontak air-kopi dan profil ekstraksi.",
+  dripTime: "Durasi total cold drip memengaruhi extraction yield dan intensitas rasa.",
+  manualDose: "Override manual gram kopi jika ingin keluar dari rekomendasi otomatis.",
+  manualWater: "Override manual volume air untuk kontrol rasio yang lebih presisi.",
+  manualWaterTemp: "Override manual suhu air untuk eksperimen ekstraksi yang lebih detail."
+};
+
+const hoverHelpByStatKey = {
+  coffee: "Jenis kopi aktif yang dipakai sebagai basis perhitungan profil rasa.",
+  process: "Ringkasan proses pasca panen dari konfigurasi saat ini.",
+  varietal: "Ringkasan varietas kopi yang aktif.",
+  grind: "Ringkasan tingkat gilingan aktif.",
+  roast: "Ringkasan roast level aktif.",
+  temp: "Suhu air aktual yang dipakai dalam model ekstraksi.",
+  mineral: "Tingkat mineral air yang memengaruhi persepsi rasa.",
+  agitation: "Level agitasi yang dipakai selama proses seduh.",
+  time: "Target waktu utama untuk metode seduh aktif.",
+  totalWater: "Total air yang dipakai pada resep saat ini.",
+  bloomWater: "Volume air untuk fase blooming.",
+  firstPour: "Volume tuangan pertama setelah blooming.",
+  secondPour: "Volume tuangan kedua untuk menyelesaikan total brew water.",
+  iceWater: "Perkiraan air/es untuk pengenceran saat penyajian.",
+  brewRatio: "Rasio brew espresso: gram kopi terhadap gram hasil ekstraksi.",
+  shotTime: "Durasi ekstraksi shot espresso.",
+  pressure: "Tekanan ekstraksi espresso dalam bar.",
+  steepTime: "Durasi perendaman pada metode immersion.",
+  drawdownTime: "Waktu penurunan kopi setelah fase brew pada syphon.",
+  dripRate: "Laju tetesan pada cold drip.",
+  dripTime: "Durasi total ekstraksi cold drip.",
+  extractionIndex: "Skor ringkas kualitas ekstraksi berdasarkan deviasi dari target alat seduh.",
+  ey: extractionGuidanceText,
+  tds: extractionGuidanceText,
+  extractionStatus: "Status ringkas ekstraksi saat ini: Under, Ideal, atau Over."
 };
 
 const tasteNotes = {
@@ -361,12 +433,41 @@ const options = {
     { value: "16", label: "16 jam" },
     { value: "18", label: "18 jam" },
     { value: "24", label: "24 jam" }
+  ],
+  beanDensity: [
+    { value: "low", label: "Rendah" },
+    { value: "medium", label: "Sedang" },
+    { value: "high", label: "Tinggi" }
+  ],
+  restDays: [
+    { value: "3", label: "3 hari" },
+    { value: "7", label: "7 hari" },
+    { value: "14", label: "14 hari" },
+    { value: "21", label: "21 hari" },
+    { value: "30", label: "30 hari" }
+  ],
+  waterAlkalinity: [
+    { value: "low", label: "Rendah" },
+    { value: "balanced", label: "Seimbang" },
+    { value: "high", label: "Tinggi" }
+  ],
+  turbulence: [
+    { value: "low", label: "Rendah" },
+    { value: "medium", label: "Sedang" },
+    { value: "high", label: "Tinggi" }
   ]
 };
 
 const commonFlavorFields = [
   { id: "processMethod", label: "Proses kopi", type: "select", options: options.processMethod, default: "washed" },
   { id: "varietal", label: "Varietas kopi", type: "select", options: options.varietal, default: "typica" }
+];
+
+const commonExtractionFields = [
+  { id: "beanDensity", label: "Densitas biji", type: "select", options: options.beanDensity, default: "medium" },
+  { id: "restDays", label: "Masa resting roast", type: "select", options: options.restDays, default: "14" },
+  { id: "waterAlkalinity", label: "Alkalinitas air", type: "select", options: options.waterAlkalinity, default: "balanced" },
+  { id: "turbulence", label: "Turbulensi aliran", type: "select", options: options.turbulence, default: "medium" }
 ];
 
 const toolConfigs = {
@@ -584,6 +685,24 @@ const agitationFlavorBias = {
   gentle: { acidity: 0.2, body: -0.1, sweetness: 0.3, bitterness: -0.2, aroma: 0.2 },
   medium: { acidity: 0, body: 0.2, sweetness: 0.2, bitterness: 0.2, aroma: 0.1 },
   high: { acidity: -0.3, body: 0.7, sweetness: -0.1, bitterness: 0.8, aroma: -0.1 }
+};
+
+const beanDensityFlavorBias = {
+  low: { acidity: 0.2, body: -0.2, sweetness: 0.1, bitterness: -0.1, aroma: 0.2 },
+  medium: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+  high: { acidity: -0.2, body: 0.3, sweetness: 0.1, bitterness: 0.2, aroma: -0.1 }
+};
+
+const alkalinityFlavorBias = {
+  low: { acidity: 0.5, body: -0.2, sweetness: 0.1, bitterness: -0.2, aroma: 0.2 },
+  balanced: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+  high: { acidity: -0.6, body: 0.2, sweetness: 0.1, bitterness: 0.2, aroma: -0.1 }
+};
+
+const turbulenceFlavorBias = {
+  low: { acidity: 0.1, body: -0.1, sweetness: 0.2, bitterness: -0.2, aroma: 0 },
+  medium: { acidity: 0, body: 0, sweetness: 0, bitterness: 0, aroma: 0 },
+  high: { acidity: -0.2, body: 0.3, sweetness: -0.1, bitterness: 0.4, aroma: -0.1 }
 };
 
 let lastFlavorProfile = null;
@@ -805,6 +924,38 @@ function showStat(key, value) {
   }
 }
 
+function setHoverHelp(target, text) {
+  if (!target || !text) {
+    return;
+  }
+
+  target.setAttribute("title", text);
+  target.setAttribute("data-tooltip", text);
+  target.classList.add("hover-help");
+}
+
+function applyHoverHelpToFormLabels() {
+  document.querySelectorAll("label[for]").forEach(label => {
+    const fieldId = label.getAttribute("for");
+    setHoverHelp(label, hoverHelpByFieldId[fieldId]);
+  });
+}
+
+function applyHoverHelpToStats() {
+  Object.entries(stats).forEach(([key, stat]) => {
+    if (!stat || !stat.row) {
+      return;
+    }
+    const labelEl = stat.row.querySelector("span");
+    setHoverHelp(labelEl, hoverHelpByStatKey[key]);
+  });
+}
+
+function hydrateHoverHelp() {
+  applyHoverHelpToFormLabels();
+  applyHoverHelpToStats();
+}
+
 function optionLabel(field, value) {
   if (!field || !field.options) {
     return value;
@@ -826,7 +977,7 @@ function getFieldValue(field, fallback) {
 }
 
 function getActiveFields(toolConfig) {
-  return [...commonFlavorFields, ...toolConfig.fields];
+  return [...commonFlavorFields, ...commonExtractionFields, ...toolConfig.fields];
 }
 
 function setFlavorVisualVisibility(visible) {
@@ -1047,6 +1198,142 @@ function resolvePrimaryTimeSeconds(values) {
   return NaN;
 }
 
+function clampNumber(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function resolveGrindExtractionFactor(grindValue) {
+  const grindMap = {
+    coarse: -0.9,
+    medium: 0,
+    fine: 0.9,
+    "medium-fine": 0.45
+  };
+
+  return grindMap[grindValue] || 0;
+}
+
+function computeExtractionEstimate({ brewTool, values, dose }) {
+  const extractionTargets = {
+    v60: { ratio: 14, ratioScale: 3, temp: 92, tempScale: 3, timeSec: 180, timeScale: 70, eyRange: [18.5, 21], tdsRange: [1.2, 1.45], ratioEyWeight: 0.24, timeEyWeight: 0.34, tempEyWeight: 0.08, tdsBase: 1.32 },
+    kalita: { ratio: 14, ratioScale: 3, temp: 92, tempScale: 3, timeSec: 190, timeScale: 80, eyRange: [18.7, 21.2], tdsRange: [1.25, 1.5], ratioEyWeight: 0.25, timeEyWeight: 0.32, tempEyWeight: 0.07, tdsBase: 1.34 },
+    chemex: { ratio: 15, ratioScale: 3, temp: 93, tempScale: 3, timeSec: 240, timeScale: 90, eyRange: [18.3, 20.8], tdsRange: [1.15, 1.35], ratioEyWeight: 0.23, timeEyWeight: 0.29, tempEyWeight: 0.07, tdsBase: 1.24 },
+    aeropress: { ratio: 13, ratioScale: 3, temp: 91, tempScale: 3, timeSec: 110, timeScale: 55, eyRange: [18.8, 21.8], tdsRange: [1.3, 1.7], ratioEyWeight: 0.28, timeEyWeight: 0.38, tempEyWeight: 0.08, tdsBase: 1.48 },
+    frenchpress: { ratio: 15, ratioScale: 3, temp: 93, tempScale: 3, timeSec: 240, timeScale: 90, eyRange: [18, 20.8], tdsRange: [1.25, 1.55], ratioEyWeight: 0.24, timeEyWeight: 0.3, tempEyWeight: 0.07, tdsBase: 1.4 },
+    syphon: { ratio: 14, ratioScale: 3, temp: 92, tempScale: 3, timeSec: 130, timeScale: 55, eyRange: [18.5, 21.3], tdsRange: [1.2, 1.5], ratioEyWeight: 0.25, timeEyWeight: 0.34, tempEyWeight: 0.08, tdsBase: 1.34 },
+    espresso: { ratio: 2.2, ratioScale: 0.8, temp: 93, tempScale: 2, timeSec: 28, timeScale: 10, eyRange: [18, 22], tdsRange: [8.5, 11], ratioEyWeight: 0.9, timeEyWeight: 0.46, tempEyWeight: 0.18, tdsBase: 9.8 },
+    mokapot: { ratio: 9, ratioScale: 2.5, temp: 93, tempScale: 2.5, timeSec: 120, timeScale: 45, eyRange: [17.8, 21], tdsRange: [3.5, 6], ratioEyWeight: 0.46, timeEyWeight: 0.36, tempEyWeight: 0.12, tdsBase: 4.6 },
+    coldBrew: { ratio: 12, ratioScale: 4, temp: 26, tempScale: 8, timeSec: 57600, timeScale: 21600, eyRange: [17.5, 20.5], tdsRange: [1.4, 2], ratioEyWeight: 0.2, timeEyWeight: 0.26, tempEyWeight: 0.04, tdsBase: 1.72 },
+    coldDrip: { ratio: 12, ratioScale: 4, temp: 24, tempScale: 8, timeSec: 10800, timeScale: 3600, eyRange: [18, 21], tdsRange: [1.3, 1.9], ratioEyWeight: 0.22, timeEyWeight: 0.28, tempEyWeight: 0.04, tdsBase: 1.6 }
+  };
+
+  const target = extractionTargets[brewTool] || extractionTargets.v60;
+  const ratio = resolvePrimaryRatio(values);
+  const timeSeconds = resolvePrimaryTimeSeconds(values);
+  const temp = Number(values.waterTemp);
+  const restDays = Number(values.restDays);
+
+  const timeMinutes = Number.isFinite(timeSeconds) ? timeSeconds / 60 : target.timeSec / 60;
+  const ratioReference = brewTool === "espresso" ? Number(values.brewRatio || 2) : ratio;
+  const ratioDelta = Number.isFinite(ratioReference)
+    ? target.ratio - ratioReference
+    : 0;
+  const timeDeltaMinutes = (timeMinutes - target.timeSec / 60);
+  const tempDelta = Number.isFinite(temp) ? temp - target.temp : 0;
+
+  const densityFactor = values.beanDensity === "high" ? -0.35 : values.beanDensity === "low" ? 0.2 : 0;
+  const alkalinityFactor = values.waterAlkalinity === "high" ? -0.2 : values.waterAlkalinity === "low" ? 0.15 : 0;
+  const turbulenceFactor = values.turbulence === "high" ? 0.35 : values.turbulence === "low" ? -0.2 : 0;
+  const restFactor = Number.isFinite(restDays)
+    ? restDays < 5
+      ? -0.8
+      : restDays > 28
+        ? -0.2
+        : 0.3
+    : 0;
+
+  const toolFactor = {
+    v60: 0,
+    kalita: 0.15,
+    chemex: -0.2,
+    aeropress: 0.3,
+    frenchpress: 0.2,
+    syphon: 0.25,
+    espresso: 0.7,
+    mokapot: 0.45,
+    coldBrew: -0.3,
+    coldDrip: -0.1
+  }[brewTool] || 0;
+
+  const eyMid = (target.eyRange[0] + target.eyRange[1]) / 2;
+  const eyBase = eyMid
+    + ratioDelta * target.ratioEyWeight
+    + tempDelta * target.tempEyWeight
+    + timeDeltaMinutes * target.timeEyWeight
+    + resolveGrindExtractionFactor(values.grind)
+    + (values.agitation ? (values.agitation === "high" ? 0.4 : values.agitation === "gentle" ? -0.25 : 0) : 0)
+    + densityFactor
+    + alkalinityFactor
+    + turbulenceFactor
+    + restFactor
+    + toolFactor;
+
+  const eyPercent = clampNumber(eyBase, 14, 24);
+
+  const concentrationBase = target.tdsBase;
+  const concentrationRatio = Number.isFinite(ratioReference)
+    ? target.ratio / Math.max(0.1, ratioReference)
+    : 1;
+
+  const tdsPercent = clampNumber(
+    concentrationBase * concentrationRatio + (Number.isFinite(dose) ? (dose - 20) * 0.01 : 0),
+    brewTool === "espresso" ? 7 : 0.8,
+    brewTool === "espresso" ? 13 : 6.5
+  );
+
+  const eyPenalty = eyPercent < target.eyRange[0]
+    ? (target.eyRange[0] - eyPercent) * 8
+    : eyPercent > target.eyRange[1]
+      ? (eyPercent - target.eyRange[1]) * 7
+      : 0;
+  const tdsPenalty = tdsPercent < target.tdsRange[0]
+    ? (target.tdsRange[0] - tdsPercent) * 14
+    : tdsPercent > target.tdsRange[1]
+      ? (tdsPercent - target.tdsRange[1]) * 14
+      : 0;
+  const ratioPenalty = Number.isFinite(ratioReference)
+    ? (Math.abs(ratioReference - target.ratio) / Math.max(0.1, target.ratioScale)) * 6
+    : 4;
+  const timePenalty = Number.isFinite(timeSeconds)
+    ? (Math.abs(timeSeconds - target.timeSec) / Math.max(1, target.timeScale)) * 6
+    : 3;
+  const tempPenalty = Number.isFinite(temp)
+    ? (Math.abs(temp - target.temp) / Math.max(1, target.tempScale)) * 4
+    : 2;
+  const extractionIndex = clampNumber(Math.round(100 - eyPenalty - tdsPenalty - ratioPenalty - timePenalty - tempPenalty), 35, 99);
+
+  const statusLabel = eyPercent < target.eyRange[0]
+    ? "Under"
+    : eyPercent > target.eyRange[1]
+      ? "Over"
+      : "Ideal";
+  const note = statusLabel === "Under"
+    ? "indikasi under-extracted (cenderung asam/kurang manis)"
+    : statusLabel === "Over"
+      ? "indikasi over-extracted (cenderung pahit/kering)"
+      : "masuk rentang ekstraksi ideal";
+
+  return {
+    extractionIndex,
+    eyPercent: Number(eyPercent.toFixed(1)),
+    tdsPercent: Number(tdsPercent.toFixed(2)),
+    statusLabel,
+    eyRangeLabel: `${target.eyRange[0]}-${target.eyRange[1]}%`,
+    tdsRangeLabel: `${target.tdsRange[0]}-${target.tdsRange[1]}%`,
+    note
+  };
+}
+
 function computeFlavorProfile({ coffeeType, brewTool, values, blendRatio }) {
   const profile = createFlavorBaseProfile();
 
@@ -1057,6 +1344,9 @@ function computeFlavorProfile({ coffeeType, brewTool, values, blendRatio }) {
   applyFlavorBias(profile, roastFlavorBias[values.roastLevel]);
   applyFlavorBias(profile, mineralFlavorBias[values.waterHardness]);
   applyFlavorBias(profile, agitationFlavorBias[values.agitation]);
+  applyFlavorBias(profile, beanDensityFlavorBias[values.beanDensity]);
+  applyFlavorBias(profile, alkalinityFlavorBias[values.waterAlkalinity]);
+  applyFlavorBias(profile, turbulenceFlavorBias[values.turbulence]);
 
   if (coffeeType === "blend" && blendRatio) {
     const robustaFactor = blendRatio.robusta / 100;
@@ -1096,6 +1386,24 @@ function computeFlavorProfile({ coffeeType, brewTool, values, blendRatio }) {
     profile.acidity -= minuteDelta * 0.14;
     profile.sweetness += minuteDelta * 0.08;
     profile.bitterness += minuteDelta * 0.2;
+  }
+
+  const extractionEstimate = computeExtractionEstimate({
+    brewTool,
+    values,
+    dose: Number(values.dose)
+  });
+
+  if (extractionEstimate.eyPercent < 18) {
+    const under = 18 - extractionEstimate.eyPercent;
+    profile.acidity += under * 0.22;
+    profile.sweetness -= under * 0.12;
+    profile.body -= under * 0.08;
+  } else if (extractionEstimate.eyPercent > 22) {
+    const over = extractionEstimate.eyPercent - 22;
+    profile.bitterness += over * 0.24;
+    profile.aroma -= over * 0.1;
+    profile.sweetness -= over * 0.1;
   }
 
   return clampFlavorProfile(profile);
@@ -1599,6 +1907,7 @@ function renderToolFields(toolId) {
   }).join("");
 
   replayClass(toolFieldsEl, "is-switching");
+  applyHoverHelpToFormLabels();
 }
 
 const brewTimerState = {
@@ -2008,6 +2317,11 @@ function buildRecipe(options = {}) {
   const doseValue = manualOverrides.dose ?? values.dose;
   const waterTempValue = manualOverrides.waterTemp ?? values.waterTemp;
   let ratioCheckWater = NaN;
+  const extractionEstimate = computeExtractionEstimate({
+    brewTool,
+    values,
+    dose: doseValue
+  });
 
   const coffeeLabel = resolveCoffeeLabel(coffeeType);
   const blendRatio = coffeeType === "blend" ? getBlendRatio() : null;
@@ -2071,6 +2385,10 @@ function buildRecipe(options = {}) {
     const agitationField = activeFields.find(field => field.id === "agitation");
     showStat("agitation", optionLabel(agitationField, values.agitation));
   }
+  showStat("extractionIndex", `${extractionEstimate.extractionIndex}/100`);
+  showStat("ey", `${extractionEstimate.eyPercent}% (target ${extractionEstimate.eyRangeLabel})`);
+  showStat("tds", `${extractionEstimate.tdsPercent}% (target ${extractionEstimate.tdsRangeLabel})`);
+  showStat("extractionStatus", extractionEstimate.statusLabel);
 
   const steps = [];
 
@@ -2406,6 +2724,7 @@ function buildRecipe(options = {}) {
       durationSec: Number.isFinite(step.durationSec) ? step.durationSec : null
     })),
     flavorProfile: { ...finalFlavorProfile },
+    extractionEstimate,
     flavorNarrative,
     sourcePage: "index",
     generatedAtMs: Date.now()
@@ -2487,6 +2806,7 @@ toggleBlendControls(document.getElementById("coffeeType").value);
 toggleCustomControls(document.getElementById("coffeeType").value);
 syncBlendInputs("robusta");
 renderToolFields(document.getElementById("brewTool").value);
+hydrateHoverHelp();
 updateProgressiveVisibility();
 setupCoffeeSpillBackground();
 buildRecipe();
