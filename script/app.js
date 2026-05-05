@@ -1,3 +1,5 @@
+import { initTipsRotator } from "./tips-rotator.js";
+
 const recipeEl = document.getElementById("recipe");
 const toolFieldsEl = document.getElementById("toolFields");
 const blendControlsEl = document.getElementById("blendControls");
@@ -2142,6 +2144,7 @@ const brewTimerState = {
   completed: new Set(),
   activeIndex: -1,
   remainingSeconds: 0,
+  isPaused: false,
   intervalId: null,
   toastTimeoutId: null
 };
@@ -2193,6 +2196,7 @@ function resetRecipeTimerState() {
   brewTimerState.completed = new Set();
   brewTimerState.activeIndex = -1;
   brewTimerState.remainingSeconds = 0;
+  brewTimerState.isPaused = false;
 }
 
 function getTimedStepMeta() {
@@ -2257,6 +2261,7 @@ function updateStageCardClasses() {
   cards.forEach(card => {
     const index = Number(card.dataset.stepIndex);
     card.classList.toggle("is-active", index === brewTimerState.activeIndex);
+    card.classList.toggle("is-paused", index === brewTimerState.activeIndex && brewTimerState.isPaused);
     card.classList.toggle("is-complete", brewTimerState.completed.has(index));
     card.classList.toggle("is-next", index === nextIndex);
   });
@@ -2279,45 +2284,93 @@ function updateStepControls() {
       return;
     }
 
+    const panel = card.querySelector(".step-timer-panel");
+    const meta = card.querySelector(".step-timer-meta");
     const controls = card.querySelector(".step-timer-controls");
+    const clock = card.querySelector(`#stepTimerDisplay-${step.index}`);
+    const status = card.querySelector(".step-timer-status");
     const passive = card.querySelector(".step-timer-passive");
-    const shouldShowTimedControls = step.durationSec > 0 && step.index === visibleIndex;
+    const toggleBtn = card.querySelector(`.step-start-btn[data-step-index="${step.index}"]`);
+    const skipBtn = card.querySelector(`.step-skip-btn[data-step-index="${step.index}"]`);
+    const isCurrentStep = step.index === brewTimerState.activeIndex;
+    const isPaused = isCurrentStep && brewTimerState.isPaused;
+    const shouldShowControls = step.durationSec > 0 && step.index === visibleIndex;
+    const shouldShowSkip = step.durationSec > 0 && isCurrentStep;
+    const isCompleted = brewTimerState.completed.has(step.index);
 
-    if (controls) {
-      controls.hidden = !shouldShowTimedControls;
+    if (panel) {
+      panel.classList.toggle("is-active", isCurrentStep && !isPaused);
+      panel.classList.toggle("is-paused", isPaused);
+      panel.classList.toggle("is-complete", isCompleted);
+    }
+
+    const shouldHideStatus = step.durationSec > 0 && !isCurrentStep && (isCompleted || step.index !== visibleIndex);
+
+    if (meta) {
+      meta.classList.toggle("is-compact", shouldHideStatus);
+    }
+
+    if (clock) {
+      if (isCompleted && !isCurrentStep) {
+        clock.textContent = "Selesai";
+      } else if (isCurrentStep) {
+        clock.textContent = formatTimerClock(brewTimerState.remainingSeconds);
+      } else {
+        clock.textContent = formatTimerClock(step.durationSec);
+      }
+    }
+
+    if (status) {
+      if (step.durationSec <= 0) {
+        status.textContent = "Tanpa timer";
+        status.hidden = false;
+      } else if (isCompleted && !isCurrentStep) {
+        status.textContent = "";
+        status.hidden = true;
+      } else if (isCurrentStep) {
+        status.textContent = isPaused ? "Dijeda" : "Berjalan";
+        status.hidden = false;
+      } else if (step.index === visibleIndex) {
+        status.textContent = "Siap dimulai";
+        status.hidden = false;
+      } else {
+        status.textContent = "";
+        status.hidden = true;
+      }
     }
 
     if (passive) {
       passive.hidden = step.durationSec > 0;
     }
 
-    if (step.durationSec <= 0 || !shouldShowTimedControls) {
-      return;
+    if (controls) {
+      controls.hidden = !shouldShowControls;
     }
 
-    const btn = card.querySelector(`.step-start-btn[data-step-index="${step.index}"]`);
-    const display = card.querySelector(`#stepTimerDisplay-${step.index}`);
-    if (!btn || !display) {
-      return;
+    if (toggleBtn) {
+      toggleBtn.hidden = !shouldShowControls;
+      if (shouldShowControls) {
+        if (isCurrentStep) {
+          if (isPaused) {
+            toggleBtn.textContent = "Resume";
+            toggleBtn.dataset.state = "paused";
+            toggleBtn.setAttribute("aria-label", "Lanjutkan timer");
+          } else {
+            toggleBtn.textContent = "Pause";
+            toggleBtn.dataset.state = "running";
+            toggleBtn.setAttribute("aria-label", "Jeda timer");
+          }
+        } else {
+          toggleBtn.textContent = "Start";
+          toggleBtn.dataset.state = "idle";
+          toggleBtn.setAttribute("aria-label", "Mulai timer");
+        }
+      }
     }
 
-    if (brewTimerState.activeIndex === step.index) {
-      btn.textContent = "Stop";
-      btn.dataset.state = "running";
-      display.textContent = formatTimerClock(brewTimerState.remainingSeconds);
-      return;
+    if (skipBtn) {
+      skipBtn.hidden = !shouldShowSkip;
     }
-
-    if (brewTimerState.completed.has(step.index)) {
-      btn.textContent = "Ulangi";
-      btn.dataset.state = "done";
-      display.textContent = "Selesai";
-      return;
-    }
-
-    btn.textContent = "Start";
-    btn.dataset.state = "idle";
-    display.textContent = formatTimerClock(step.durationSec);
   });
 }
 
@@ -2341,7 +2394,9 @@ function updateTimerProgressUI() {
   if (brewTimerState.activeIndex >= 0) {
     const activeStep = brewTimerState.stepMeta.find(step => step.index === brewTimerState.activeIndex);
     statusEl.textContent = activeStep
-      ? `${activeStep.title} berjalan - sisa ${formatTimerClock(brewTimerState.remainingSeconds)}`
+      ? brewTimerState.isPaused
+        ? `${activeStep.title} dijeda - sisa ${formatTimerClock(brewTimerState.remainingSeconds)}. Tekan Resume untuk lanjut.`
+        : `${activeStep.title} berjalan - sisa ${formatTimerClock(brewTimerState.remainingSeconds)}`
       : "Tahap berjalan.";
     return;
   }
@@ -2364,57 +2419,8 @@ function updateTimerProgressUI() {
   statusEl.textContent = "Pilih tahap dan tekan Start saat siap brewing.";
 }
 
-function completeStage(index) {
+function startStageCountdown(index) {
   clearActiveStageTimer();
-  brewTimerState.activeIndex = -1;
-  brewTimerState.remainingSeconds = 0;
-  brewTimerState.completed.add(index);
-
-  const step = brewTimerState.stepMeta.find(item => item.index === index);
-  if (step) {
-    showStageToast(`Tahap selesai: ${step.title}`);
-  }
-
-  const nextIndex = getNextPendingStepIndex();
-  if (nextIndex >= 0) {
-    const nextStep = brewTimerState.stepMeta.find(item => item.index === nextIndex);
-    if (nextStep) {
-      showStageToast(`Lanjut ke ${nextStep.title}. Tekan Start saat siap.`);
-    }
-  }
-
-  updateStageCardClasses();
-  updateStepControls();
-  updateTimerProgressUI();
-}
-
-function startStageTimer(index) {
-  const step = brewTimerState.stepMeta.find(item => item.index === index);
-  if (!step || step.durationSec <= 0) {
-    return;
-  }
-
-  if (brewTimerState.activeIndex === index) {
-    clearActiveStageTimer();
-    brewTimerState.activeIndex = -1;
-    brewTimerState.remainingSeconds = 0;
-    showStageToast("Timer dihentikan.");
-    updateStageCardClasses();
-    updateStepControls();
-    updateTimerProgressUI();
-    return;
-  }
-
-  clearActiveStageTimer();
-  brewTimerState.completed.delete(index);
-  brewTimerState.activeIndex = index;
-  brewTimerState.remainingSeconds = step.durationSec;
-  showStageToast(`Mulai: ${step.title}`);
-
-  updateStageCardClasses();
-  updateStepControls();
-  updateTimerProgressUI();
-
   brewTimerState.intervalId = setInterval(() => {
     brewTimerState.remainingSeconds = Math.max(0, brewTimerState.remainingSeconds - 1);
     updateStepControls();
@@ -2424,6 +2430,202 @@ function startStageTimer(index) {
       completeStage(index);
     }
   }, 1000);
+}
+
+function pauseStageTimer(index) {
+  if (brewTimerState.activeIndex !== index || brewTimerState.isPaused) {
+    return;
+  }
+
+  clearActiveStageTimer();
+  brewTimerState.isPaused = true;
+
+  const step = brewTimerState.stepMeta.find(item => item.index === index);
+  if (step) {
+    showStageToast(`Timer dijeda: ${step.title}`);
+  }
+
+  updateStageCardClasses();
+  updateStepControls();
+  updateTimerProgressUI();
+}
+
+function resumeStageTimer(index) {
+  const step = brewTimerState.stepMeta.find(item => item.index === index);
+  if (!step || brewTimerState.activeIndex !== index || !brewTimerState.isPaused || brewTimerState.remainingSeconds <= 0) {
+    return;
+  }
+
+  brewTimerState.isPaused = false;
+  showStageToast(`Timer dilanjutkan: ${step.title}`);
+
+  updateStageCardClasses();
+  updateStepControls();
+  updateTimerProgressUI();
+  startStageCountdown(index);
+}
+
+function completeStage(index, options = {}) {
+  const { reason = "complete" } = options;
+  clearActiveStageTimer();
+  brewTimerState.activeIndex = -1;
+  brewTimerState.isPaused = false;
+  brewTimerState.remainingSeconds = 0;
+  brewTimerState.completed.add(index);
+
+  const step = brewTimerState.stepMeta.find(item => item.index === index);
+  const stepMessage = step
+    ? reason === "skip"
+      ? `Tahap dilewati: ${step.title}`
+      : `Tahap selesai: ${step.title}`
+    : reason === "skip"
+      ? "Tahap dilewati."
+      : "Tahap selesai.";
+
+  const nextIndex = getNextPendingStepIndex();
+  if (nextIndex >= 0) {
+    const nextStep = brewTimerState.stepMeta.find(item => item.index === nextIndex);
+    if (nextStep) {
+      showStageToast(`${stepMessage} Lanjut ke ${nextStep.title}. Tekan Start saat siap.`);
+    } else {
+      showStageToast(stepMessage);
+    }
+  } else {
+    showStageToast(stepMessage);
+  }
+
+  updateStageCardClasses();
+  updateStepControls();
+  updateTimerProgressUI();
+}
+
+function skipStage(index) {
+  const step = brewTimerState.stepMeta.find(item => item.index === index);
+  if (!step || step.durationSec <= 0 || brewTimerState.activeIndex !== index) {
+    return;
+  }
+
+  completeStage(index, { reason: "skip" });
+}
+
+function startStageTimer(index) {
+  const step = brewTimerState.stepMeta.find(item => item.index === index);
+  if (!step || step.durationSec <= 0) {
+    return;
+  }
+
+  if (brewTimerState.activeIndex === index) {
+    if (brewTimerState.isPaused) {
+      resumeStageTimer(index);
+    } else {
+      pauseStageTimer(index);
+    }
+    return;
+  }
+
+  clearActiveStageTimer();
+  brewTimerState.completed.delete(index);
+  brewTimerState.activeIndex = index;
+  brewTimerState.isPaused = false;
+  brewTimerState.remainingSeconds = step.durationSec;
+  showStageToast(`Mulai: ${step.title}`);
+
+  updateStageCardClasses();
+  updateStepControls();
+  updateTimerProgressUI();
+
+  startStageCountdown(index);
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function parseFlavorNoteLine(line) {
+  const normalized = String(line || "").replace(/^[-•]\s*/, "").trim();
+  const patterns = [
+    { regex: /^Karakter dasar\s+([^:]+):\s*(.+)$/i, label: "Karakter dasar", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Aroma\s+([^,]+),\s*(.+)$/i, label: "Aroma", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Proses\s+([^:]+):\s*(.+)$/i, label: "Proses", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Varietas\s+([^:]+):\s*(.+)$/i, label: "Varietas", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Metode\s+([A-Za-z0-9]+)\s+(.+)$/i, label: "Metode", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Tuangan\s+([A-Za-z0-9]+)\s+(.+)$/i, label: "Tuangan", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Roast\s+([A-Za-z0-9]+)\s+(.+)$/i, label: "Roast", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Mineral\s+([A-Za-z0-9]+)\s+(.+)$/i, label: "Mineral", badgeIndex: 1, textIndex: 2 },
+    { regex: /^Agitasi\s+([A-Za-z0-9]+)\s+(.+)$/i, label: "Agitasi", badgeIndex: 1, textIndex: 2 }
+  ];
+
+  for (const pattern of patterns) {
+    const match = normalized.match(pattern.regex);
+    if (match) {
+      return {
+        label: pattern.label,
+        badge: match[pattern.badgeIndex].trim(),
+        text: match[pattern.textIndex].trim()
+      };
+    }
+  }
+
+  if (normalized.includes(":")) {
+    const [label, ...rest] = normalized.split(":");
+    return {
+      label: label.trim(),
+      badge: "",
+      text: rest.join(":").trim()
+    };
+  }
+
+  return {
+    label: "Catatan",
+    badge: "",
+    text: normalized
+  };
+}
+
+function renderFlavorNoteHtml(noteText) {
+  const noteItems = String(noteText || "")
+    .split(/\n+/)
+    .map(line => line.trim())
+    .filter(Boolean)
+    .map(parseFlavorNoteLine)
+    .filter(item => item.text);
+
+  if (noteItems.length === 0) {
+    return "";
+  }
+
+  const [leadItem, ...detailItems] = noteItems;
+  const detailCardsHtml = detailItems.map(item => `
+    <article class="step-note-card">
+      <div class="step-note-card-head">
+        <span class="step-note-card-label">${escapeHtml(item.label)}</span>
+        ${item.badge ? `<span class="step-note-card-badge">${escapeHtml(item.badge)}</span>` : ""}
+      </div>
+      <div class="step-note-textbox">
+        <p>${escapeHtml(item.text)}</p>
+      </div>
+    </article>
+  `).join("");
+
+  return `
+    <div class="step-note-body">
+      <div class="step-note-hero">
+        <div class="step-note-hero-head">
+          <span class="step-note-hero-label">${escapeHtml(leadItem.label)}</span>
+          ${leadItem.badge ? `<span class="step-note-badge">${escapeHtml(leadItem.badge)}</span>` : ""}
+        </div>
+        <div class="step-note-textbox step-note-textbox-hero">
+          <p>${escapeHtml(leadItem.text)}</p>
+        </div>
+      </div>
+      ${detailCardsHtml ? `<div class="step-note-grid">${detailCardsHtml}</div>` : ""}
+    </div>
+  `;
 }
 
 function renderRecipeWithTimers(steps) {
@@ -2458,23 +2660,36 @@ function renderRecipeWithTimers(steps) {
   const stepsHtml = steps
     .map((step, index) => {
       const duration = stepMeta[index].durationSec;
-      const timerControlHtml = duration > 0
+      const isNoteStep = duration <= 0;
+      const timerControlHtml = !isNoteStep
         ? `
-          <div class="step-timer-controls">
-            <span class="step-duration">${formatTimerClock(duration)}</span>
-            <span class="step-timer-display" id="stepTimerDisplay-${index}">${formatTimerClock(duration)}</span>
-            <button type="button" class="step-start-btn" data-step-index="${index}" data-state="idle">Start</button>
+          <div class="step-timer-panel" data-step-index="${index}">
+            <div class="step-timer-face" id="stepTimerDisplay-${index}">${formatTimerClock(duration)}</div>
+            <div class="step-timer-meta">
+              <span class="step-timer-label">Timer digital</span>
+              <span class="step-timer-status">Menunggu giliran</span>
+            </div>
+            <div class="step-timer-controls">
+              <button type="button" class="step-start-btn" data-step-index="${index}" data-state="idle" aria-label="Mulai timer">Start</button>
+              <button type="button" class="step-start-btn step-skip-btn" data-step-index="${index}" aria-label="Lewati tahap ini" hidden>Skip</button>
+            </div>
           </div>
         `
-        : `<span class="step-timer-passive">Tanpa timer</span>`;
+        : "";
+
+      const layoutClass = isNoteStep ? "step-layout is-note" : "step-layout";
+      const stepClass = isNoteStep ? "step step-note" : "step";
+      const noteBodyHtml = isNoteStep ? renderFlavorNoteHtml(step.desc) : "";
 
       return `
-        <div class="step" style="--step-index:${index}" data-step-index="${index}">
-          <div class="step-head">
-            <h4>${step.title}</h4>
+        <div class="${stepClass}" style="--step-index:${index}" data-step-index="${index}">
+          <div class="${layoutClass}">
+            <div class="step-copy">
+              <h4>${step.title}</h4>
+              ${isNoteStep ? noteBodyHtml : `<p>${step.desc}</p>`}
+            </div>
             ${timerControlHtml}
           </div>
-          <p>${step.desc}</p>
         </div>
       `;
     })
@@ -2491,17 +2706,27 @@ function renderRecipeWithTimers(steps) {
 }
 
 recipeEl.addEventListener("click", event => {
+  const skipBtn = event.target.closest(".step-skip-btn");
+  if (skipBtn) {
+    const index = Number(skipBtn.dataset.stepIndex);
+    if (!Number.isFinite(index)) {
+      return;
+    }
+
+    skipStage(index);
+    return;
+  }
+
   const startBtn = event.target.closest(".step-start-btn");
-  if (!startBtn) {
+  if (startBtn) {
+    const index = Number(startBtn.dataset.stepIndex);
+    if (!Number.isFinite(index)) {
+      return;
+    }
+
+    startStageTimer(index);
     return;
   }
-
-  const index = Number(startBtn.dataset.stepIndex);
-  if (!Number.isFinite(index)) {
-    return;
-  }
-
-  startStageTimer(index);
 });
 
 function buildRecipe(options = {}) {
@@ -3214,3 +3439,4 @@ updateProgressiveVisibility();
 setupCoffeeSpillBackground();
 buildRecipe();
 tryApplyDashboardEditRecipe();
+initTipsRotator();
