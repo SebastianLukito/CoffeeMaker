@@ -181,7 +181,7 @@ header {
   margin: 0;
   display: grid;
   gap: 6px;
-  margin-top: 26px;
+  margin-top: 56px;
 }
 
 .hero-intro h1 span {
@@ -2466,7 +2466,7 @@ footer {
   left: 0;
   right: 0;
   width: 100%;
-  background-color:#251105;
+  background-color:#402d1a;
   background-image: url("https://www.transparenttextures.com/patterns/grey-jean.png");
   padding: 6px 20px; /* Reduced vertical padding */
   z-index: 10000; /* Below buttons */
