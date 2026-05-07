@@ -2661,6 +2661,7 @@ function renderRecipeWithTimers(steps) {
     .map((step, index) => {
       const duration = stepMeta[index].durationSec;
       const isNoteStep = duration <= 0;
+      const isFlavorNote = step.title === "Catatan rasa";
       const timerControlHtml = !isNoteStep
         ? `
           <div class="step-timer-panel" data-step-index="${index}">
@@ -2678,15 +2679,15 @@ function renderRecipeWithTimers(steps) {
         : "";
 
       const layoutClass = isNoteStep ? "step-layout is-note" : "step-layout";
-      const stepClass = isNoteStep ? "step step-note" : "step";
-      const noteBodyHtml = isNoteStep ? renderFlavorNoteHtml(step.desc) : "";
+      const stepClass = isNoteStep ? (isFlavorNote ? "step step-note" : "step step-note step-instruction") : "step";
+      const noteBodyHtml = isNoteStep && isFlavorNote ? renderFlavorNoteHtml(step.desc) : "";
 
       return `
         <div class="${stepClass}" style="--step-index:${index}" data-step-index="${index}">
           <div class="${layoutClass}">
             <div class="step-copy">
               <h4>${step.title}</h4>
-              ${isNoteStep ? noteBodyHtml : `<p>${step.desc}</p>`}
+              ${isNoteStep && isFlavorNote ? noteBodyHtml : `<p>${step.desc}</p>`}
             </div>
             ${timerControlHtml}
           </div>
@@ -2887,7 +2888,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter, panaskan server, lalu buang airnya.`,
-        durationSec: 60
+        durationSec: 0
       },
       {
         title: "Blooming",
@@ -2907,7 +2908,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve dingin",
         desc: "Tuang hasil seduhan ke gelas berisi es batu besar agar tetap clean tanpa over-dilution.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -2923,7 +2924,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Bilas filter dan preheat chamber.`,
-        durationSec: 45
+        durationSec: 0
       },
       {
         title: "Seduh",
@@ -2938,7 +2939,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve dingin",
         desc: "Sajikan langsung di atas es batu besar untuk karakter yang tetap bright.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -2954,7 +2955,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan french press.`,
-        durationSec: 45
+        durationSec: 0
       },
       {
         title: "Seduh",
@@ -2969,7 +2970,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve dingin",
         desc: "Tuang ke gelas berisi es batu agar body tetap tebal namun tetap segar.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -2986,7 +2987,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Panaskan ${formatMl(totalWater)} air (${waterTempValue}°C) di lower chamber.`,
-        durationSec: 60
+        durationSec: 0
       },
       {
         title: "Ekstraksi",
@@ -3001,7 +3002,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve dingin",
         desc: "Sajikan di atas es batu besar untuk menjaga clarity dan aroma.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -3021,7 +3022,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}. Distribusi dan tamping merata.`,
-        durationSec: 45
+        durationSec: 0
       },
       {
         title: "Extraction",
@@ -3031,7 +3032,7 @@ function buildRecipe(options = {}) {
       {
         title: "Iced finish",
         desc: "Tarik shot langsung ke gelas berisi es batu besar untuk menjaga crema dan rasa manis alami.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -3046,7 +3047,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
-        durationSec: 45
+        durationSec: 0
       },
       {
         title: "Brew",
@@ -3056,7 +3057,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve dingin",
         desc: "Tuang hasil moka pot ke gelas berisi es batu besar, aduk sekali sebelum diminum.",
-        durationSec: 20
+        durationSec: 0
       }
     );
   }
@@ -3074,7 +3075,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
-        durationSec: 60
+        durationSec: 0
       },
       {
         title: "Immersion",
@@ -3094,7 +3095,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serving",
         desc: `Saat disajikan, tambahkan sekitar ${formatMl(serveDilution)} air dingin/es sesuai kekuatan rasa yang diinginkan.`,
-        durationSec: 30
+        durationSec: 0
       }
     );
   }
@@ -3111,7 +3112,7 @@ function buildRecipe(options = {}) {
       {
         title: "Persiapan",
         desc: `Gunakan ${doseValue}g kopi (${coffeeLabel}), gilingan ${values.grind}, roast ${values.roastLevel}.`,
-        durationSec: 60
+        durationSec: 0
       },
       {
         title: "Drip setup",
@@ -3126,7 +3127,7 @@ function buildRecipe(options = {}) {
       {
         title: "Serve",
         desc: "Sajikan langsung dengan es batu besar untuk rasa clean.",
-        durationSec: 30
+        durationSec: 0
       }
     );
   }

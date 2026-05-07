@@ -1474,6 +1474,34 @@ select::-ms-expand {
   align-items: flex-start;
 }
 
+/* Styling untuk step tanpa timer (Persiapan, Serve, dll) */
+.step-instruction {
+  padding: 16px !important;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 251, 249, 0.92) 100%) !important;
+  border: 1px solid rgba(74, 127, 107, 0.14) !important;
+  border-left: 3px solid rgba(74, 127, 107, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(34, 27, 22, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.7) !important;
+}
+
+.step-instruction .step-copy {
+  gap: 8px;
+}
+
+.step-instruction .step-copy h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 2px 0;
+}
+
+.step-instruction .step-copy p {
+  margin: 0;
+  color: #7d7570;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  font-weight: 500;
+}
+
 @media (max-width: 620px) {
   .step-note {
     padding: 16px;
