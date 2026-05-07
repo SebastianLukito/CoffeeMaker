@@ -12,6 +12,28 @@
   <link rel="stylesheet" href="style/styles.css" />
 </head>
 <body>
+  <!-- Top buttons bar -->
+  <div class="top-buttons-bar">
+    <button class="hamburger-menu-toggle" aria-label="Toggle menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="top-buttons-right">
+      <button class="top-auth-btn" id="authTrigger" type="button">Login</button>
+      <button class="top-auth-btn" id="logoutBtn" type="button" hidden>Logout</button>
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu">
+    <a class="mobile-menu-item" href="compare.html">Comparison Lab</a>
+    <a class="mobile-menu-item" id="homeLink" href="home.html" hidden>Home Account</a>
+    <a class="mobile-menu-item" id="dashboardLink" href="dashboard.html" hidden>Recipe Dashboard</a>
+  </div>
+
+  <!-- Marquee with logo and title -->
+  <div class="marquee-container" data-text="Javanese Iced Coffee Studio -- Made With Love by Sebastian"></div>
   <canvas class="spill-canvas" id="spillCanvas" aria-hidden="true"></canvas>
   <div class="noise" aria-hidden="true"></div>
   <header>
@@ -281,6 +303,8 @@
     </div>
   </div>
 
+  <script src="script/hamburger-menu.js"></script>
+  <script src="script/marquee.js"></script>
   <script type="module" src="script/pages/index-page.js"></script>
 </body>
 </html>
