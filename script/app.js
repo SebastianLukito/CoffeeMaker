@@ -931,7 +931,6 @@ function setHoverHelp(target, text) {
     return;
   }
 
-  target.setAttribute("title", text);
   target.setAttribute("data-tooltip", text);
   target.classList.add("hover-help");
 }
@@ -999,102 +998,130 @@ function setTuningAssistantVisibility(visible) {
 function buildTuningRecommendations(issue, context) {
   const { values, profile, brewTool, activeFields } = context;
   const hasField = id => activeFields.some(field => field.id === id);
-  const suggestions = [];
+  const priorityGroups = { critical: [], primary: [], secondary: [] };
+
+  const currentTemp = Number(values.waterTemp) || 92;
+  const currentRatio = Number(values.ratio) || 15;
+  const currentBrewRatio = Number(values.brewRatio) || 2;
 
   const canAdjustTemp = hasField("waterTemp") && Number.isFinite(Number(values.waterTemp));
   const canAdjustRatio = hasField("ratio") && Number.isFinite(Number(values.ratio));
   const canAdjustEspressoRatio = hasField("brewRatio") && Number.isFinite(Number(values.brewRatio));
   const canAdjustGrind = hasField("grind");
+  const canAdjustAgitation = hasField("agitation");
   const canAdjustTime = ["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"].some(id => hasField(id));
 
   if (issue === "too-bitter") {
     if (canAdjustTemp) {
-      const nextTemp = Math.max(75, Number(values.waterTemp) - 2);
-      suggestions.push(`Turunkan suhu air sekitar 2°C (coba ${nextTemp}°C).`);
+      const nextTemp = Math.max(75, currentTemp - 2);
+      priorityGroups.critical.push(`Turunkan suhu air ke ${nextTemp}°C (dari ${currentTemp}°C) – cara tercepat kurangi pahit.`);
     }
     if (canAdjustGrind) {
-      suggestions.push("Gunakan grind sedikit lebih kasar untuk menurunkan over-extraction.");
-    }
-    if (canAdjustRatio) {
-      const nextRatio = Math.min(30, Number(values.ratio) + 1);
-      suggestions.push(`Naikkan rasio air ke sekitar 1:${nextRatio} agar cup lebih clean.`);
+      priorityGroups.primary.push("Ubah grind 1 level lebih kasar untuk mengurangi over-extraction.");
     }
     if (canAdjustTime) {
-      suggestions.push("Pendekkan waktu seduh 10-20 detik pada tahap utama.");
+      priorityGroups.primary.push("Pendekkan waktu seduh sekitar 15-20 detik dari target awal.");
+    }
+    if (canAdjustRatio && currentRatio < 20) {
+      const nextRatio = Math.min(30, currentRatio + 1);
+      priorityGroups.secondary.push(`Naikkan rasio air ke 1:${nextRatio} agar cup lebih clean dan less concentrated.`);
+    }
+    if (canAdjustAgitation) {
+      priorityGroups.secondary.push("Kurangi agitasi 1 level untuk meminimalkan ekstraksi compounds pahit.");
     }
   }
 
   if (issue === "too-sour") {
     if (canAdjustTemp) {
-      const nextTemp = Math.min(100, Number(values.waterTemp) + 2);
-      suggestions.push(`Naikkan suhu air sekitar 2°C (coba ${nextTemp}°C).`);
+      const nextTemp = Math.min(100, currentTemp + 2);
+      priorityGroups.critical.push(`Naikkan suhu air ke ${nextTemp}°C (dari ${currentTemp}°C) – ekstraksi lebih dalam untuk sweetness.`);
+    }
+    if (canAdjustRatio && currentRatio > 10) {
+      const nextRatio = Math.max(8, currentRatio - 1);
+      priorityGroups.primary.push(`Turunkan rasio ke 1:${nextRatio} untuk stronger body dan lebih manis.`);
     }
     if (canAdjustGrind) {
-      suggestions.push("Gunakan grind sedikit lebih halus untuk meningkatkan ekstraksi.");
-    }
-    if (canAdjustRatio) {
-      const nextRatio = Math.max(8, Number(values.ratio) - 1);
-      suggestions.push(`Turunkan rasio ke sekitar 1:${nextRatio} untuk memperkuat body dan sweetness.`);
+      priorityGroups.primary.push("Ubah grind 1 level lebih halus untuk ekstraksi lebih dalam.");
     }
     if (canAdjustTime) {
-      suggestions.push("Tambahkan waktu kontak air 10-20 detik.");
+      priorityGroups.secondary.push("Naikkan waktu kontak air 15-20 detik untuk dissolve lebih banyak sweetness.");
+    }
+    if (canAdjustAgitation) {
+      priorityGroups.secondary.push("Tingkatkan agitasi 1 level agar ekstraksi lebih efisien.");
     }
   }
 
   if (issue === "too-thin") {
-    if (canAdjustRatio) {
-      const nextRatio = Math.max(8, Number(values.ratio) - 1);
-      suggestions.push(`Gunakan rasio lebih pekat: coba 1:${nextRatio}.`);
-    } else if (canAdjustEspressoRatio) {
-      const nextRatio = Math.max(1.5, Number(values.brewRatio) - 0.2).toFixed(1);
-      suggestions.push(`Turunkan brew ratio espresso ke sekitar 1:${nextRatio}.`);
+    if (canAdjustRatio && currentRatio > 10) {
+      const nextRatio = Math.max(8, currentRatio - 1);
+      priorityGroups.critical.push(`Turunkan rasio ke 1:${nextRatio} untuk body yang lebih full dan creamy.`);
+    } else if (canAdjustEspressoRatio && currentBrewRatio > 1.8) {
+      const nextRatio = Math.max(1.5, currentBrewRatio - 0.2).toFixed(1);
+      priorityGroups.critical.push(`Turunkan brew ratio espresso ke 1:${nextRatio} – yield lebih banyak = body lebih kuat.`);
     }
     if (canAdjustGrind) {
-      suggestions.push("Pakai grind sedikit lebih halus agar body naik.");
+      priorityGroups.primary.push("Ubah grind 1-2 level lebih halus untuk contact time lebih lama.");
     }
-    suggestions.push("Kurangi agitasi berlebihan agar struktur cup tidak terlalu tipis.");
+    if (canAdjustAgitation) {
+      priorityGroups.primary.push("Tingkatkan agitasi untuk meningkatkan dissolving rate compounds.");
+    }
+    if (canAdjustTemp && currentTemp < 95) {
+      priorityGroups.secondary.push("Naikkan suhu 1-2°C untuk membantu ekstraksi oils dan body.");
+    }
   }
 
   if (issue === "too-heavy") {
-    if (canAdjustRatio) {
-      const nextRatio = Math.min(30, Number(values.ratio) + 1);
-      suggestions.push(`Naikkan rasio ke sekitar 1:${nextRatio} supaya body lebih ringan.`);
-    } else if (canAdjustEspressoRatio) {
-      const nextRatio = Math.min(4, Number(values.brewRatio) + 0.2).toFixed(1);
-      suggestions.push(`Naikkan brew ratio espresso ke sekitar 1:${nextRatio}.`);
+    if (canAdjustRatio && currentRatio < 20) {
+      const nextRatio = Math.min(30, currentRatio + 1);
+      priorityGroups.critical.push(`Naikkan rasio ke 1:${nextRatio} untuk cup lebih ringan dan clean.`);
+    } else if (canAdjustEspressoRatio && currentBrewRatio < 3) {
+      const nextRatio = Math.min(4, currentBrewRatio + 0.2).toFixed(1);
+      priorityGroups.critical.push(`Naikkan brew ratio espresso ke 1:${nextRatio} untuk undercut intensity.`);
     }
     if (canAdjustGrind) {
-      suggestions.push("Gunakan grind sedikit lebih kasar untuk mengurangi kepadatan seduhan.");
+      priorityGroups.primary.push("Ubah grind 1 level lebih kasar untuk shorter contact time.");
     }
-    if (canAdjustTemp) {
-      suggestions.push("Turunkan suhu 1-2°C agar ekstraksi komponen pahit lebih terkendali.");
+    if (canAdjustTemp && currentTemp > 90) {
+      priorityGroups.primary.push("Turunkan suhu 2°C agar ekstraksi oils berkurang (less oily = less heavy).");
+    }
+    if (canAdjustAgitation) {
+      priorityGroups.secondary.push("Kurangi agitasi agar dissolving rate terkontrol dan body tidak overextracted.");
     }
   }
 
   if (issue === "too-flat") {
-    if (canAdjustTemp) {
-      const nextTemp = Math.min(100, Number(values.waterTemp) + 1);
-      suggestions.push(`Naikkan suhu tipis sekitar 1°C (target ${nextTemp}°C) untuk buka aroma.`);
+    if (canAdjustTemp && currentTemp < 96) {
+      const nextTemp = Math.min(100, currentTemp + 1);
+      priorityGroups.critical.push(`Naikkan suhu ke ${nextTemp}°C – aromatics lebih volatile dan banyak terlepas.`);
     }
-    suggestions.push("Tingkatkan agitasi 1 level lebih tinggi saat fase awal seduh.");
-    suggestions.push("Pakai grind sedikit lebih halus agar note aromatik lebih keluar.");
+    if (canAdjustAgitation) {
+      priorityGroups.primary.push("Tingkatkan agitasi 1 level di fase awal untuk release aromatics lebih banyak.");
+    }
+    if (canAdjustGrind) {
+      priorityGroups.primary.push("Ubah grind sedikit lebih halus agar surface area lebih besar (more aroma release).");
+    }
+    priorityGroups.secondary.push("Pastikan kopi masih fresh (< 3 minggu dari roast date) – aromatics hilang seiring waktu.");
   }
 
   if (issue === "too-dry") {
-    if (canAdjustTemp) {
-      const nextTemp = Math.max(75, Number(values.waterTemp) - 1);
-      suggestions.push(`Turunkan suhu 1°C (coba ${nextTemp}°C) untuk aftertaste lebih smooth.`);
+    if (canAdjustTemp && currentTemp > 85) {
+      const nextTemp = Math.max(75, currentTemp - 1);
+      priorityGroups.critical.push(`Turunkan suhu ke ${nextTemp}°C – acidity lebih soft, aftertaste lebih smooth.`);
     }
-    if (canAdjustRatio) {
-      const nextRatio = Math.min(30, Number(values.ratio) + 1);
-      suggestions.push(`Sedikit naikkan rasio air ke 1:${nextRatio}.`);
+    if (canAdjustRatio && currentRatio < 20) {
+      const nextRatio = Math.min(30, currentRatio + 1);
+      priorityGroups.primary.push(`Naikkan rasio air ke 1:${nextRatio} – dilute bitter compounds, less dry.`);
     }
-    suggestions.push("Kurangi intensitas agitasi agar tannin tidak terlalu menonjol.");
+    if (canAdjustAgitation) {
+      priorityGroups.primary.push("Kurangi agitasi 1 level untuk extract lebih sedikit tannins.");
+    }
+    if (canAdjustGrind) {
+      priorityGroups.secondary.push("Ubah grind 1 level lebih kasar – ekstraksi lebih sedikit = less astringent.");
+    }
   }
 
-  if (profile.bitterness >= 7 && !suggestions.some(item => item.includes("suhu"))) {
-    suggestions.push("Bitterness terdeteksi tinggi, prioritas pertama: turunkan suhu atau coarsen grind.");
-  }
+  // Flatten priority groups into final suggestions
+  const suggestions = [...priorityGroups.critical, ...priorityGroups.primary, ...priorityGroups.secondary];
 
   return suggestions.slice(0, 4);
 }
