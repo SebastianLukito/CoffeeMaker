@@ -2173,7 +2173,8 @@ const brewTimerState = {
   remainingSeconds: 0,
   isPaused: false,
   intervalId: null,
-  toastTimeoutId: null
+  toastTimeoutId: null,
+  lastSteps: null
 };
 
 function parseClockToSeconds(value) {
@@ -2406,6 +2407,7 @@ function updateTimerProgressUI() {
   const ringEl = document.getElementById("brewTimerRing");
   const percentEl = document.getElementById("brewTimerPercent");
   const statusEl = document.getElementById("brewTimerStatus");
+  const restartBtn = document.getElementById("brewRestartBtn");
 
   if (!barFillEl || !ringEl || !percentEl || !statusEl) {
     return;
@@ -2417,6 +2419,11 @@ function updateTimerProgressUI() {
   barFillEl.style.width = `${percent}%`;
   ringEl.style.setProperty("--brew-progress", `${percent * 3.6}deg`);
   percentEl.textContent = `${roundedPercent}%`;
+
+  // Show restart button when progress > 0%
+  if (restartBtn) {
+    restartBtn.hidden = percent <= 0;
+  }
 
   if (brewTimerState.activeIndex >= 0) {
     const activeStep = brewTimerState.stepMeta.find(step => step.index === brewTimerState.activeIndex);
@@ -2444,6 +2451,13 @@ function updateTimerProgressUI() {
   }
 
   statusEl.textContent = "Pilih tahap dan tekan Start saat siap brewing.";
+}
+
+function restartBrew() {
+  if (brewTimerState.lastSteps && brewTimerState.lastSteps.length > 0) {
+    renderRecipeWithTimers(brewTimerState.lastSteps);
+    showStageToast("Brew timer di-restart. Mulai dari awal dengan parameter yang sama.");
+  }
 }
 
 function startStageCountdown(index) {
@@ -2657,6 +2671,7 @@ function renderFlavorNoteHtml(noteText) {
 
 function renderRecipeWithTimers(steps) {
   resetRecipeTimerState();
+  brewTimerState.lastSteps = steps;
 
   const stepMeta = steps.map((step, index) => ({
     index,
@@ -2680,6 +2695,7 @@ function renderRecipeWithTimers(steps) {
           </div>
         </div>
         <div class="brew-timer-bar"><span id="brewTimerBarFill"></span></div>
+        <button type="button" class="brew-restart-btn" id="brewRestartBtn" hidden aria-label="Restart brew timer">↻ Restart</button>
       </div>
     `
     : "";
@@ -2734,6 +2750,12 @@ function renderRecipeWithTimers(steps) {
 }
 
 recipeEl.addEventListener("click", event => {
+  const restartBtn = event.target.closest(".brew-restart-btn");
+  if (restartBtn) {
+    restartBrew();
+    return;
+  }
+
   const skipBtn = event.target.closest(".step-skip-btn");
   if (skipBtn) {
     const index = Number(skipBtn.dataset.stepIndex);
