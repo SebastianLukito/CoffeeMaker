@@ -1381,6 +1381,13 @@ select::-ms-expand {
   display: flex;
   align-items: flex-start;
   gap: 12px;
+  padding: 0;
+}
+
+.tuning-action-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
   padding: 13px 15px;
   border-radius: 11px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 251, 247, 0.93) 100%);
@@ -1390,16 +1397,14 @@ select::-ms-expand {
   line-height: 1.6;
   font-weight: 500;
   transition: all 0.25s var(--ease-out);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  position: relative;
 }
 
-.tuning-list li:hover {
-  transform: translateX(2px);
-  border-color: rgba(208, 123, 58, 0.2);
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 248, 242, 0.96) 100%);
-  box-shadow: 0 2px 8px rgba(208, 123, 58, 0.08);
-}
-
-.tuning-list li::before {
+.tuning-action-btn::before {
   content: "✓";
   color: rgba(208, 123, 58, 0.8);
   flex-shrink: 0;
@@ -1407,6 +1412,19 @@ select::-ms-expand {
   font-size: 1rem;
   line-height: 1.2;
   margin-top: 2px;
+}
+
+.tuning-action-btn:hover {
+  transform: translateX(2px);
+  border-color: rgba(208, 123, 58, 0.35);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 248, 242, 0.96) 100%);
+  box-shadow: 0 2px 8px rgba(208, 123, 58, 0.15);
+  color: #6b5e57;
+}
+
+.tuning-action-btn:active {
+  transform: translateX(1px);
+  box-shadow: 0 1px 4px rgba(208, 123, 58, 0.1);
 }
 
 .brew-timer-panel {

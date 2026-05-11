@@ -222,15 +222,23 @@
         <div class="tuning-controls">
           <div>
             <select id="tasteIssue">
-              <option value="too-bitter">Terlalu pahit</option>
-              <option value="too-sour">Terlalu asam</option>
-              <option value="too-thin">Body terlalu tipis</option>
-              <option value="too-heavy">Body terlalu tebal</option>
+              <option value="" selected disabled>Pilih masalah rasa kopi</option>
+              <option value="too-bitter">Terlalu pahit / sepat</option>
+              <option value="too-sour">Terlalu asam / sour</option>
+              <option value="too-thin">Body terlalu tipis / weak</option>
+              <option value="too-heavy">Body terlalu tebal / over</option>
               <option value="too-flat">Aroma kurang keluar</option>
               <option value="too-dry">Aftertaste terlalu kering</option>
+              <option value="too-bitter-candy">Pahit tapi manis berlebihan</option>
+              <option value="lack-clarity">Clarity kurang, rasa berantakan</option>
+              <option value="lack-sweetness">Manis kurang, rasa flat</option>
+              <option value="too-acidic">Acidity terlalu tajam</option>
+              <option value="lack-aroma">Aroma kurang / kurang kompleks</option>
+              <option value="over-extraction">Over-extraction terasa</option>
+              <option value="under-extraction">Under-extraction / greeny taste</option>
+              <option value="stuck">Rasa menempel di gigi</option>
             </select>
           </div>
-          <button class="btn tuning-btn is-hidden" id="runTuning" type="button" aria-hidden="true">Ikuti Saran Tuning</button>
         </div>
 
         <div class="tuning-summary" id="tuningSummary">Pilih masalah rasa, lalu klik tombol Ikuti Saran Tuning.</div>

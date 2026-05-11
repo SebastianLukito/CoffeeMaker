@@ -1003,6 +1003,8 @@ function buildTuningRecommendations(issue, context) {
   const currentTemp = Number(values.waterTemp) || 92;
   const currentRatio = Number(values.ratio) || 15;
   const currentBrewRatio = Number(values.brewRatio) || 2;
+  const currentGrind = values.grind || "medium";
+  const currentAgitation = values.agitation || "medium";
 
   const canAdjustTemp = hasField("waterTemp") && Number.isFinite(Number(values.waterTemp));
   const canAdjustRatio = hasField("ratio") && Number.isFinite(Number(values.ratio));
@@ -1011,119 +1013,330 @@ function buildTuningRecommendations(issue, context) {
   const canAdjustAgitation = hasField("agitation");
   const canAdjustTime = ["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"].some(id => hasField(id));
 
+  const grindOrder = ["coarse", "medium", "fine", "medium-fine"];
+  const agitationOrder = ["gentle", "medium", "high"];
+
   if (issue === "too-bitter") {
     if (canAdjustTemp) {
       const nextTemp = Math.max(75, currentTemp - 2);
-      priorityGroups.critical.push(`Turunkan suhu air ke ${nextTemp}°C (dari ${currentTemp}°C) – cara tercepat kurangi pahit.`);
+      priorityGroups.critical.push({
+        text: `Turunkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.primary.push("Ubah grind 1 level lebih kasar untuk mengurangi over-extraction.");
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih kasar",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
     }
     if (canAdjustTime) {
-      priorityGroups.primary.push("Pendekkan waktu seduh sekitar 15-20 detik dari target awal.");
+      priorityGroups.primary.push({
+        text: "Pendekkan waktu seduh ~15 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], -15, context)
+      });
     }
     if (canAdjustRatio && currentRatio < 20) {
       const nextRatio = Math.min(30, currentRatio + 1);
-      priorityGroups.secondary.push(`Naikkan rasio air ke 1:${nextRatio} agar cup lebih clean dan less concentrated.`);
+      priorityGroups.secondary.push({
+        text: `Naikkan rasio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("ratio", nextRatio, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.secondary.push("Kurangi agitasi 1 level untuk meminimalkan ekstraksi compounds pahit.");
+      priorityGroups.secondary.push({
+        text: "Kurangi agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, -1, context)
+      });
     }
   }
 
   if (issue === "too-sour") {
     if (canAdjustTemp) {
       const nextTemp = Math.min(100, currentTemp + 2);
-      priorityGroups.critical.push(`Naikkan suhu air ke ${nextTemp}°C (dari ${currentTemp}°C) – ekstraksi lebih dalam untuk sweetness.`);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
     }
     if (canAdjustRatio && currentRatio > 10) {
       const nextRatio = Math.max(8, currentRatio - 1);
-      priorityGroups.primary.push(`Turunkan rasio ke 1:${nextRatio} untuk stronger body dan lebih manis.`);
+      priorityGroups.primary.push({
+        text: `Turunkan rasio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("ratio", nextRatio, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.primary.push("Ubah grind 1 level lebih halus untuk ekstraksi lebih dalam.");
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih halus",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
     }
     if (canAdjustTime) {
-      priorityGroups.secondary.push("Naikkan waktu kontak air 15-20 detik untuk dissolve lebih banyak sweetness.");
+      priorityGroups.secondary.push({
+        text: "Naikkan waktu kontak ~15 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], 15, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.secondary.push("Tingkatkan agitasi 1 level agar ekstraksi lebih efisien.");
+      priorityGroups.secondary.push({
+        text: "Tingkatkan agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, 1, context)
+      });
     }
   }
 
   if (issue === "too-thin") {
     if (canAdjustRatio && currentRatio > 10) {
       const nextRatio = Math.max(8, currentRatio - 1);
-      priorityGroups.critical.push(`Turunkan rasio ke 1:${nextRatio} untuk body yang lebih full dan creamy.`);
+      priorityGroups.critical.push({
+        text: `Turunkan rasio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("ratio", nextRatio, context)
+      });
     } else if (canAdjustEspressoRatio && currentBrewRatio > 1.8) {
       const nextRatio = Math.max(1.5, currentBrewRatio - 0.2).toFixed(1);
-      priorityGroups.critical.push(`Turunkan brew ratio espresso ke 1:${nextRatio} – yield lebih banyak = body lebih kuat.`);
+      priorityGroups.critical.push({
+        text: `Turunkan brew ratio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("brewRatio", nextRatio, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.primary.push("Ubah grind 1-2 level lebih halus untuk contact time lebih lama.");
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih halus",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.primary.push("Tingkatkan agitasi untuk meningkatkan dissolving rate compounds.");
+      priorityGroups.primary.push({
+        text: "Tingkatkan agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, 1, context)
+      });
     }
     if (canAdjustTemp && currentTemp < 95) {
-      priorityGroups.secondary.push("Naikkan suhu 1-2°C untuk membantu ekstraksi oils dan body.");
+      priorityGroups.secondary.push({
+        text: `Naikkan suhu ke ${currentTemp + 1}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", currentTemp + 1, context)
+      });
     }
   }
 
   if (issue === "too-heavy") {
     if (canAdjustRatio && currentRatio < 20) {
       const nextRatio = Math.min(30, currentRatio + 1);
-      priorityGroups.critical.push(`Naikkan rasio ke 1:${nextRatio} untuk cup lebih ringan dan clean.`);
+      priorityGroups.critical.push({
+        text: `Naikkan rasio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("ratio", nextRatio, context)
+      });
     } else if (canAdjustEspressoRatio && currentBrewRatio < 3) {
       const nextRatio = Math.min(4, currentBrewRatio + 0.2).toFixed(1);
-      priorityGroups.critical.push(`Naikkan brew ratio espresso ke 1:${nextRatio} untuk undercut intensity.`);
+      priorityGroups.critical.push({
+        text: `Naikkan brew ratio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("brewRatio", nextRatio, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.primary.push("Ubah grind 1 level lebih kasar untuk shorter contact time.");
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih kasar",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
     }
     if (canAdjustTemp && currentTemp > 90) {
-      priorityGroups.primary.push("Turunkan suhu 2°C agar ekstraksi oils berkurang (less oily = less heavy).");
+      priorityGroups.primary.push({
+        text: `Turunkan suhu ke ${currentTemp - 2}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", currentTemp - 2, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.secondary.push("Kurangi agitasi agar dissolving rate terkontrol dan body tidak overextracted.");
+      priorityGroups.secondary.push({
+        text: "Kurangi agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, -1, context)
+      });
     }
   }
 
   if (issue === "too-flat") {
     if (canAdjustTemp && currentTemp < 96) {
       const nextTemp = Math.min(100, currentTemp + 1);
-      priorityGroups.critical.push(`Naikkan suhu ke ${nextTemp}°C – aromatics lebih volatile dan banyak terlepas.`);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.primary.push("Tingkatkan agitasi 1 level di fase awal untuk release aromatics lebih banyak.");
+      priorityGroups.primary.push({
+        text: "Tingkatkan agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, 1, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.primary.push("Ubah grind sedikit lebih halus agar surface area lebih besar (more aroma release).");
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih halus sedikit",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
     }
-    priorityGroups.secondary.push("Pastikan kopi masih fresh (< 3 minggu dari roast date) – aromatics hilang seiring waktu.");
   }
 
   if (issue === "too-dry") {
     if (canAdjustTemp && currentTemp > 85) {
       const nextTemp = Math.max(75, currentTemp - 1);
-      priorityGroups.critical.push(`Turunkan suhu ke ${nextTemp}°C – acidity lebih soft, aftertaste lebih smooth.`);
+      priorityGroups.critical.push({
+        text: `Turunkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
     }
     if (canAdjustRatio && currentRatio < 20) {
       const nextRatio = Math.min(30, currentRatio + 1);
-      priorityGroups.primary.push(`Naikkan rasio air ke 1:${nextRatio} – dilute bitter compounds, less dry.`);
+      priorityGroups.primary.push({
+        text: `Naikkan rasio ke 1:${nextRatio}`,
+        action: () => setFieldValueFromTuning("ratio", nextRatio, context)
+      });
     }
     if (canAdjustAgitation) {
-      priorityGroups.primary.push("Kurangi agitasi 1 level untuk extract lebih sedikit tannins.");
+      priorityGroups.primary.push({
+        text: "Kurangi agitasi 1 level",
+        action: () => shiftDiscreteField("agitation", agitationOrder, -1, context)
+      });
     }
     if (canAdjustGrind) {
-      priorityGroups.secondary.push("Ubah grind 1 level lebih kasar – ekstraksi lebih sedikit = less astringent.");
+      priorityGroups.secondary.push({
+        text: "Ubah grind lebih kasar",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
+    }
+  }
+
+  if (issue === "too-bitter-candy") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.max(75, currentTemp - 3);
+      priorityGroups.critical.push({
+        text: `Turunkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustGrind) {
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih kasar",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
+    }
+  }
+
+  if (issue === "lack-clarity") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 1);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu sedikit ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustAgitation) {
+      priorityGroups.primary.push({
+        text: "Tingkatkan agitasi untuk merata",
+        action: () => shiftDiscreteField("agitation", agitationOrder, 1, context)
+      });
+    }
+  }
+
+  if (issue === "lack-sweetness") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 2);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustTime) {
+      priorityGroups.primary.push({
+        text: "Naikkan waktu kontak ~10 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], 10, context)
+      });
+    }
+  }
+
+  if (issue === "too-acidic") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 3);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustTime) {
+      priorityGroups.primary.push({
+        text: "Naikkan waktu kontak ~20 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], 20, context)
+      });
+    }
+  }
+
+  if (issue === "lack-aroma") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 2);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustGrind) {
+      priorityGroups.primary.push({
+        text: "Ubah grind lebih halus sedikit",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
+    }
+  }
+
+  if (issue === "over-extraction") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.max(75, currentTemp - 2);
+      priorityGroups.critical.push({
+        text: `Turunkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustTime) {
+      priorityGroups.primary.push({
+        text: "Pendekkan waktu seduh ~20 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], -20, context)
+      });
+    }
+  }
+
+  if (issue === "under-extraction") {
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 2);
+      priorityGroups.critical.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
+    }
+    if (canAdjustTime) {
+      priorityGroups.primary.push({
+        text: "Naikkan waktu kontak ~20 detik",
+        action: () => shiftFirstAvailableTimeField(["targetTime", "steepTime", "brewTime", "pressTime", "drawdownTime", "shotTime"], 20, context)
+      });
+    }
+  }
+
+  if (issue === "stuck") {
+    if (canAdjustGrind) {
+      priorityGroups.critical.push({
+        text: "Ubah grind lebih kasar",
+        action: () => shiftDiscreteField("grind", grindOrder, 1, context)
+      });
+    }
+    if (canAdjustTemp) {
+      const nextTemp = Math.min(100, currentTemp + 1);
+      priorityGroups.primary.push({
+        text: `Naikkan suhu ke ${nextTemp}°C`,
+        action: () => setFieldValueFromTuning("waterTemp", nextTemp, context)
+      });
     }
   }
 
   // Flatten priority groups into final suggestions
   const suggestions = [...priorityGroups.critical, ...priorityGroups.primary, ...priorityGroups.secondary];
 
-  return suggestions.slice(0, 4);
+  return suggestions.slice(0, 5);
 }
 
 function renderTuningAssistant(issue = "too-bitter") {
@@ -1137,15 +1350,38 @@ function renderTuningAssistant(issue = "too-bitter") {
     "too-thin": "body terlalu tipis",
     "too-heavy": "body terlalu tebal",
     "too-flat": "aroma kurang keluar",
-    "too-dry": "aftertaste terlalu kering"
+    "too-dry": "aftertaste terlalu kering",
+    "too-bitter-candy": "pahit tapi manis berlebihan",
+    "lack-clarity": "clarity kurang",
+    "lack-sweetness": "manis kurang",
+    "too-acidic": "acidity terlalu tajam",
+    "lack-aroma": "aroma kurang",
+    "over-extraction": "over-extraction",
+    "under-extraction": "under-extraction",
+    "stuck": "rasa menempel"
   };
 
   const recommendations = buildTuningRecommendations(issue, lastTuningContext);
-  const fallback = ["Belum ada saran spesifik. Coba ubah satu variabel kecil dulu (suhu atau rasio), lalu cupping ulang."];
+  const fallback = [{ text: "Belum ada saran spesifik. Coba ubah satu variabel kecil dulu." }];
   const result = recommendations.length > 0 ? recommendations : fallback;
 
-  tuningSummaryEl.textContent = `Analisis untuk keluhan ${labels[issue] || issue}.`;
-  tuningListEl.innerHTML = result.map(item => `<li>${item}</li>`).join("");
+  tuningSummaryEl.textContent = `Analisis untuk: ${labels[issue] || issue}`;
+  tuningListEl.innerHTML = result.map((item, index) => `<li><button class="tuning-action-btn" data-index="${index}">${item.text}</button></li>`).join("");
+
+  // Tambah event listener untuk setiap tombol
+  tuningListEl.querySelectorAll(".tuning-action-btn").forEach((btn, idx) => {
+    btn.addEventListener("click", () => {
+      const rec = recommendations[idx];
+      if (rec && rec.action) {
+        rec.action();
+        buildRecipe({ animateCup: true });
+        tuningSummaryEl.textContent = `Saran diterapkan: ${rec.text}`;
+        setTimeout(() => {
+          renderTuningAssistant(issue);
+        }, 500);
+      }
+    });
+  });
 }
 
 function getFieldDefinition(activeFields, fieldId) {
@@ -3439,35 +3675,8 @@ document.getElementById("brewTool").addEventListener("change", event => {
 });
 toolFieldsEl.addEventListener("input", buildRecipe);
 toolFieldsEl.addEventListener("change", buildRecipe);
-if (runTuningEl) {
-  runTuningEl.classList.add("is-hidden");
-  runTuningEl.setAttribute("aria-hidden", "true");
-  runTuningEl.addEventListener("click", () => {
-    replayClass(runTuningEl, "btn-pulse");
-    if (!tasteIssueEl || !lastTuningContext) {
-      return;
-    }
-
-    const issue = tasteIssueEl.value || "too-bitter";
-    const appliedChanges = applyTuningIssue(issue, lastTuningContext);
-
-    if (appliedChanges.length > 0) {
-      buildRecipe({ animateCup: true });
-      renderTuningAssistant(issue);
-      if (tuningSummaryEl) {
-        tuningSummaryEl.textContent = `Saran diterapkan: ${appliedChanges.join(", ")}.`;
-      }
-    } else if (tuningSummaryEl) {
-      tuningSummaryEl.textContent = "Belum ada parameter yang bisa diubah otomatis untuk mode ini.";
-    }
-  });
-}
 if (tasteIssueEl) {
   tasteIssueEl.addEventListener("change", () => {
-    if (runTuningEl) {
-      runTuningEl.classList.remove("is-hidden");
-      runTuningEl.removeAttribute("aria-hidden");
-    }
     renderTuningAssistant(tasteIssueEl.value);
   });
 }
