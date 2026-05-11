@@ -42,6 +42,7 @@ body.compare-page .pill-link:not(.auth-btn) {
 .compare-brew-card {
   border: 1px solid rgba(34, 27, 22, 0.1);
   box-shadow: 0 12px 28px rgba(34, 27, 22, 0.06);
+  overflow: visible !important;
 }
 
 .compare-brew-card[data-side="A"] {
@@ -65,16 +66,20 @@ body.compare-page .pill-link:not(.auth-btn) {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px 16px;
+  overflow: visible !important;
 }
 
 .compare-field-row {
   display: grid;
   gap: 6px;
+  position: relative;
+  overflow: visible !important;
 }
 
 .compare-field-row label {
   margin: 0;
   font-size: 0.92rem;
+  position: relative;
 }
 
 .compare-field-row input,

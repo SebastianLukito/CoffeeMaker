@@ -329,8 +329,9 @@ header {
   box-shadow: var(--shadow);
   border: 1px solid rgba(34, 27, 22, 0.08);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  z-index: 1;
 }
 
 .card::before {
@@ -352,7 +353,8 @@ header {
 }
 
 .hero-card {
-  overflow: visible;
+  overflow: visible !important;
+  clip-path: none;
 }
 
 .grid {
@@ -367,7 +369,7 @@ header {
 .base-grid {
   margin-bottom: 12px;
   position: relative;
-  z-index: 4;
+  z-index: 3;
 }
 
 .setup-hint {
@@ -379,7 +381,7 @@ header {
   background: rgba(255, 255, 255, 0.62);
   font-size: 0.95rem;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .setup-hint.is-hidden {
@@ -389,6 +391,10 @@ header {
 .advanced-options {
   margin-top: 12px;
   animation: fade-up 0.45s var(--ease-out) both;
+  overflow: visible !important;
+  clip-path: none;
+  position: relative;
+  z-index: 1;
 }
 
 .advanced-options.is-hidden {
@@ -397,6 +403,7 @@ header {
 
 .advanced-grid {
   margin-bottom: 8px;
+  position: relative;
 }
 
 #toolFields {
@@ -409,7 +416,7 @@ header {
 .advanced-grid > .custom-controls,
 .advanced-grid > .blend-controls {
   position: relative;
-  z-index: 1;
+  overflow: visible;
 }
 
 #toolFields > .tool-field:hover,
@@ -419,8 +426,27 @@ header {
 .advanced-grid > .custom-controls:hover,
 .advanced-grid > .custom-controls:focus-within,
 .advanced-grid > .blend-controls:hover,
-.advanced-grid > .blend-controls:focus-within {
-  z-index: 45;
+.advanced-grid > .blend-controls:focus-within,
+.manual-overrides-grid > div:hover,
+.manual-overrides-grid > div:focus-within {
+  z-index: 2;
+}
+
+#toolFields > .tool-field:hover label,
+#toolFields > .tool-field:focus-within label,
+.base-grid > div:hover label,
+.base-grid > div:focus-within label,
+.advanced-grid > .custom-controls:hover label,
+.advanced-grid > .custom-controls:focus-within label,
+.advanced-grid > .blend-controls:hover label,
+.advanced-grid > .blend-controls:focus-within label,
+.manual-overrides-grid > div:hover label,
+.manual-overrides-grid > div:focus-within label {
+  z-index: 1;
+}
+
+select, input {
+  position: relative;
 }
 
 .action-row {
@@ -511,11 +537,15 @@ header {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 14px;
+  position: relative;
+  overflow: visible !important;
 }
 
 .manual-overrides-grid > div {
   display: grid;
   gap: 6px;
+  position: relative;
+  overflow: visible;
 }
 
 .manual-overrides-grid label {
@@ -781,10 +811,12 @@ label {
   font-size: 0.9rem;
   margin-bottom: 6px;
   color: var(--muted);
+  position: relative;
 }
 
 .hover-help {
   position: relative;
+  z-index: auto;
   cursor: help;
   text-decoration-line: underline;
   text-decoration-style: dotted;
@@ -793,13 +825,18 @@ label {
 }
 
 @media (hover: hover) {
+  .hover-help:hover,
+  .hover-help:focus-visible {
+    z-index: 1000001;
+  }
+
   .hover-help:hover::after,
   .hover-help:focus-visible::after {
     content: attr(data-tooltip);
     position: absolute;
     left: 0;
     top: calc(100% + 8px);
-    width: min(330px, 86vw);
+    width: min(330px, 86vw, 100%);
     padding: 10px 12px;
     border-radius: 10px;
     border: 1px solid rgba(74, 127, 107, 0.36);
@@ -811,7 +848,8 @@ label {
     line-height: 1.42;
     letter-spacing: 0;
     white-space: pre-line;
-    z-index: 120;
+    z-index: 1000003 !important;
+    pointer-events: auto !important;
   }
 
   .hover-help:hover::before,
@@ -826,7 +864,8 @@ label {
     border-top: 1px solid rgba(74, 127, 107, 0.36);
     background: rgba(255, 252, 247, 0.98);
     transform: rotate(45deg);
-    z-index: 121;
+    z-index: 1000004 !important;
+    pointer-events: none !important;
   }
 
   .base-grid > div:nth-child(2) .hover-help:hover::after,
@@ -848,6 +887,18 @@ label {
     left: auto;
     right: 14px;
   }
+
+  .hero-card:has(#advancedOptions:not(.is-hidden)) .base-grid > div:first-child .hover-help:hover::after,
+  .hero-card:has(#advancedOptions:not(.is-hidden)) .base-grid > div:first-child .hover-help:focus-visible::after {
+    top: auto;
+    bottom: calc(100% + 8px);
+  }
+
+  .hero-card:has(#advancedOptions:not(.is-hidden)) .base-grid > div:first-child .hover-help:hover::before,
+  .hero-card:has(#advancedOptions:not(.is-hidden)) .base-grid > div:first-child .hover-help:focus-visible::before {
+    top: auto;
+    bottom: calc(100% + 2px);
+  }
 }
 
 select, input {
@@ -859,6 +910,7 @@ select, input {
   font-size: 1rem;
   font-family: inherit;
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+  position: relative;
 }
 
 select:hover, input:hover {
@@ -881,6 +933,21 @@ select {
   background-repeat: no-repeat;
   background-position: right 18px center;
   background-size: 14px;
+  max-height: 100px;
+  overflow-y: auto;
+}
+
+select option {
+  padding: 8px 12px;
+  background: #fff;
+  color: #221b16;
+  line-height: 1.5;
+  
+}
+
+select option:checked {
+  background: linear-gradient(rgba(74, 127, 107, 0.2), rgba(74, 127, 107, 0.2));
+  color: #221b16;
 }
 
 select::-ms-expand {
@@ -2612,6 +2679,20 @@ footer {
     gap: 8px;
     padding: 2px 0 6px;
   }
+}
+
+/* ============================================== */
+/* UNIVERSAL TOOLTIP OVERRIDE - ALWAYS ON TOP    */
+/* ============================================== */
+.hover-help:hover::after,
+.hover-help:focus-visible::after {
+  z-index: 2147483647 !important;
+}
+
+.hover-help:hover::before,
+.hover-help:focus-visible::before {
+  z-index: 2147483646 !important;
+}
 
   .header-actions .pill-link,
   .header-actions .auth-btn {
@@ -2659,7 +2740,6 @@ footer {
     border-color: rgba(34, 27, 22, 0.14);
     background: rgba(255, 255, 255, 0.9);
   }
-}
 
 @media (max-width: 620px) {
   header {
